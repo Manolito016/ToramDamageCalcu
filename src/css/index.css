@@ -1,0 +1,701 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --font-ui:   'Outfit', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Surfaces — cool slate, not warm navy */
+  --bg-base:    #0c0f14;
+  --bg-surface: #111520;
+  --bg-raised:  #161b28;
+  --bg-float:   #1c2233;
+  --bg-hover:   #212840;
+
+  /* Accent — electric teal */
+  --accent:        #38d9c0;
+  --accent-dim:    rgba(56, 217, 192, 0.12);
+  --accent-edge:   rgba(56, 217, 192, 0.35);
+  --accent-glow:   rgba(56, 217, 192, 0.18);
+  --accent-muted:  #1fa090;
+
+  /* Secondary accent — warm amber for highlights */
+  --hi:       #f5a623;
+  --hi-dim:   rgba(245, 166, 35, 0.12);
+  --hi-edge:  rgba(245, 166, 35, 0.35);
+
+  /* Text */
+  --tx-1: #e8edf5;   /* primary */
+  --tx-2: #7a8aaa;   /* secondary */
+  --tx-3: #4a5570;   /* muted */
+  --tx-4: #2e3650;   /* ghost */
+
+  /* Borders */
+  --br-1: rgba(255,255,255,0.05);
+  --br-2: rgba(255,255,255,0.09);
+  --br-3: rgba(255,255,255,0.14);
+  --br-a: rgba(56, 217, 192, 0.3);
+
+  /* Shadows */
+  --sh-sm: 0 1px 4px rgba(0,0,0,0.4);
+  --sh-md: 0 4px 16px rgba(0,0,0,0.5);
+  --sh-lg: 0 12px 36px rgba(0,0,0,0.6);
+
+  /* Radius */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+
+  /* Transitions */
+  --t-fast:   0.15s ease;
+  --t-base:   0.25s ease;
+  --t-spring: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  font-family: var(--font-ui);
+  color-scheme: dark;
+  
+  /* Header specific variables */
+  --header-bg: rgba(12, 15, 20, 0.85);
+  --header-shadow: rgba(56,217,192,0.06);
+}
+
+/* Light mode variables */
+[data-theme="light"] {
+  /* Surfaces — clean white/light gray */
+  --bg-base:    #ffffff;
+  --bg-surface: #f8fafc;
+  --bg-raised:  #f1f5f9;
+  --bg-float:   #e2e8f0;
+  --bg-hover:   #cbd5e1;
+
+  /* Accent — electric teal (same for consistency) */
+  --accent:        #38d9c0;
+  --accent-dim:    rgba(56, 217, 192, 0.15);
+  --accent-edge:   rgba(56, 217, 192, 0.4);
+  --accent-glow:   rgba(56, 217, 192, 0.25);
+  --accent-muted:  #1fa090;
+
+  /* Secondary accent */
+  --hi:       #f5a623;
+  --hi-dim:   rgba(245, 166, 35, 0.15);
+  --hi-edge:  rgba(245, 166, 35, 0.4);
+
+  /* Text */
+  --tx-1: #0f172a;   /* primary */
+  --tx-2: #475569;   /* secondary */
+  --tx-3: #94a3b8;   /* muted */
+  --tx-4: #cbd5e1;   /* ghost */
+
+  /* Borders */
+  --br-1: rgba(0,0,0,0.08);
+  --br-2: rgba(0,0,0,0.12);
+  --br-3: rgba(0,0,0,0.18);
+  --br-a: rgba(56, 217, 192, 0.4);
+
+  /* Shadows */
+  --sh-sm: 0 1px 4px rgba(0,0,0,0.08);
+  --sh-md: 0 4px 16px rgba(0,0,0,0.12);
+  --sh-lg: 0 12px 36px rgba(0,0,0,0.16);
+
+  color-scheme: light;
+  
+  /* Header specific variables */
+  --header-bg: rgba(255, 255, 255, 0.85);
+  --header-shadow: rgba(56,217,192,0.12);
+}
+
+/* ═══════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+/* ═══════════════════════════════════════════
+   BODY
+═══════════════════════════════════════════ */
+body {
+  background-color: var(--bg-base);
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% 0%,  rgba(56,217,192,0.045) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 100%, rgba(30,60,150,0.05)  0%, transparent 60%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: var(--tx-1);
+  padding: 0 16px;
+  line-height: 1.55;
+}
+
+/* ═══════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════ */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(56,217,192,0.2); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(56,217,192,0.4); }
+* { scrollbar-width: thin; scrollbar-color: rgba(56,217,192,0.2) transparent; }
+
+/* ═══════════════════════════════════════════
+   SECTION CARD
+═══════════════════════════════════════════ */
+.section-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--br-1);
+  border-radius: var(--r-xl);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  transition: border-color var(--t-base), box-shadow var(--t-base);
+  box-shadow: var(--sh-sm);
+}
+
+.section-card:hover {
+  border-color: var(--br-a);
+  box-shadow: var(--sh-md), 0 0 0 1px rgba(56,217,192,0.06);
+}
+
+/* ── Section body padding ── */
+/* The direct child div after the header gets generous breathing room */
+.section-card > div:not(.section-header) {
+  padding: 1.25rem 1.5rem !important;
+}
+
+/* Sub-panels (raised boxes inside sections) */
+.section-card > div > div[class*="rounded"],
+.section-card > div > div > div[class*="rounded"] {
+  padding: 1rem 1.125rem !important;
+  margin-bottom: 1rem;
+}
+
+.section-card > div > div[class*="rounded"]:last-child,
+.section-card > div > div > div[class*="rounded"]:last-child {
+  margin-bottom: 0;
+}
+
+/* Grid gaps inside sections */
+.section-card .grid {
+  gap: 0.875rem;
+}
+
+/* Inline input rows */
+.section-card .flex.flex-col.gap-1 {
+  gap: 0.375rem;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION HEADER
+═══════════════════════════════════════════ */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(90deg, rgba(56,217,192,0.07) 0%, transparent 60%);
+  border-bottom: 1px solid var(--br-1);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--tx-1);
+  text-transform: uppercase;
+  position: relative;
+}
+
+/* Left teal stripe */
+.section-header::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; bottom: 20%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.section-header svg {
+  color: var(--accent) !important;
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   TYPOGRAPHY — SUBSECTION HEADINGS
+═══════════════════════════════════════════ */
+h3, h4, h5 { font-family: var(--font-ui); }
+
+/* Sub-headings inside sections (e.g., "Main Weapon", "Avatar Stats") */
+.section-card h3 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx-2);
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: block;
+}
+
+/* Crystal / sub-sub headings */
+.section-card h4,
+.section-card h5 {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+  margin: 0 0 0.5rem;
+  padding: 0;
+  display: block;
+}
+
+/* Reset any forced spacing from old CSS */
+.section-card h3,
+.section-card h4,
+.section-card h5 {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* First h3 that follows a group border-b (sub-group title) */
+.section-card .text-sm.font-medium.mb-3.pb-2.border-b {
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.07em !important;
+  text-transform: uppercase !important;
+  color: var(--tx-2) !important;
+  margin-bottom: 0.75rem !important;
+  padding-bottom: 0.5rem !important;
+  border-color: var(--br-1) !important;
+}
+
+/* ═══════════════════════════════════════════
+   INPUT FIELDS (bare inputs in components)
+═══════════════════════════════════════════ */
+input[type="number"],
+input[type="text"],
+select {
+  background: var(--bg-float);
+  border: 1px solid var(--br-2);
+  border-radius: var(--r-sm);
+  color: var(--tx-1);
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.625rem;
+  outline: none;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="number"]:hover,
+input[type="text"]:hover,
+select:hover {
+  border-color: var(--br-3);
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(56,217,192,0.12);
+}
+
+input[type="number"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+select option {
+  background: var(--bg-float);
+  color: var(--tx-1);
+}
+
+/* Remove number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; }
+input[type="number"] { -moz-appearance: textfield; appearance: none; }
+
+/* ═══════════════════════════════════════════
+   FORM LABELS
+═══════════════════════════════════════════ */
+label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+/* ═══════════════════════════════════════════
+   SUB-PANELS (p-3 bg-slate-800/30 etc.)
+═══════════════════════════════════════════ */
+.section-card > div > div[class*="bg-slate"],
+.section-card > div > div > div[class*="bg-slate"] {
+  background: var(--bg-raised) !important;
+  border: 1px solid var(--br-1) !important;
+  border-radius: var(--r-lg) !important;
+}
+
+/* ═══════════════════════════════════════════
+   STAT GROUP (ResultsPanel)
+═══════════════════════════════════════════ */
+/* StatGroup container */
+.rounded-lg.overflow-hidden {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+/* StatGroup title bar */
+.rounded-lg.overflow-hidden > div:first-child {
+  background: var(--bg-float) !important;
+  border-bottom: 1px solid var(--br-1) !important;
+  padding: 0.5rem 0.875rem !important;
+}
+
+.rounded-lg.overflow-hidden > div:first-child h3 {
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: var(--accent) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* StatRow */
+.flex.items-center.py-2.px-3.rounded {
+  border-radius: var(--r-sm) !important;
+  transition: background var(--t-fast);
+}
+
+.flex.items-center.py-2.px-3.rounded:hover {
+  background: var(--bg-hover) !important;
+}
+
+/* ═══════════════════════════════════════════
+   SKILL CARD
+═══════════════════════════════════════════ */
+/* The skill card container */
+.p-2.rounded-md[style*="bg-raised"] {
+  border-radius: var(--r-md) !important;
+}
+
+/* Skill group title bar */
+h3.text-sm.font-medium.mb-3.pb-2.border-b.flex.items-center.gap-2 {
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: var(--tx-2) !important;
+  padding-bottom: 0.5rem !important;
+  margin-bottom: 0.75rem !important;
+  border-color: var(--br-1) !important;
+}
+
+/* Skill group accent stripe */
+.w-1.h-4.rounded-full {
+  background: var(--accent) !important;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Skill select dropdown */
+.section-card select.w-12 {
+  width: 3rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--bg-float);
+  border: 1px solid var(--br-2);
+  padding: 0.25rem 0.125rem;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+
+.section-card select.w-12:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #4ae8d0 0%, var(--accent) 50%, var(--accent-muted) 100%);
+  color: #051a17;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--r-md);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(56,217,192,0.3);
+  transition: transform var(--t-spring), box-shadow var(--t-base), filter var(--t-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56,217,192,0.4);
+  filter: brightness(1.05);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--bg-float);
+  color: var(--tx-2);
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--r-md);
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  border: 1px solid var(--br-2);
+  cursor: pointer;
+  transition: all var(--t-base);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-hover);
+  border-color: var(--br-3);
+  color: var(--tx-1);
+  transform: translateY(-1px);
+}
+
+/* ═══════════════════════════════════════════
+   STATS GRID (CharacterSection)
+═══════════════════════════════════════════ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.625rem;
+}
+
+@media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 480px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+/* ═══════════════════════════════════════════
+   STAT CARD
+═══════════════════════════════════════════ */
+.stat-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--br-1);
+  border-radius: var(--r-lg);
+  padding: 0.875rem 0.75rem;
+  text-align: center;
+  transition: border-color var(--t-base), box-shadow var(--t-base), transform var(--t-spring);
+}
+
+.stat-card:hover {
+  border-color: var(--br-a);
+  box-shadow: 0 4px 16px var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+.stat-card.highlight {
+  background: var(--accent-dim);
+  border-color: var(--accent-edge);
+}
+
+.stat-card .value,
+.stat-card > strong { color: var(--tx-1); }
+.stat-card.highlight .value,
+.stat-card.highlight > strong { color: var(--accent); }
+
+.stat-card .label,
+.stat-card > small {
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+  margin-top: 0.25rem;
+  display: block;
+}
+
+/* ═══════════════════════════════════════════
+   SKILLS GRID
+═══════════════════════════════════════════ */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.5rem;
+}
+
+@media (max-width: 640px) { .skills-grid { grid-template-columns: 1fr; } }
+
+/* ═══════════════════════════════════════════
+   EQUIPMENT GRID
+═══════════════════════════════════════════ */
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 1024px) { .equipment-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px)  { .equipment-grid { grid-template-columns: 1fr; } }
+
+/* ═══════════════════════════════════════════
+   DIVIDER
+═══════════════════════════════════════════ */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--br-2) 30%, var(--br-3) 50%, var(--br-2) 70%, transparent);
+  margin: 1rem 0;
+}
+
+/* ═══════════════════════════════════════════
+   BADGE
+═══════════════════════════════════════════ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 100px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent-edge);
+}
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════ */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-in { animation: fade-up 0.35s ease both; }
+
+.loading-spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2px solid rgba(56,217,192,0.25);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ═══════════════════════════════════════════
+   SELECTION
+═══════════════════════════════════════════ */
+::selection          { background: rgba(56,217,192,0.2); color: var(--tx-1); }
+::-moz-selection     { background: rgba(56,217,192,0.2); color: var(--tx-1); }
+
+/* ═══════════════════════════════════════════
+   OVERRIDE INLINE STYLE COLORS
+   (components use style={{ color: 'var(...)' }}
+    so the tokens auto-apply via CSS vars)
+═══════════════════════════════════════════ */
+
+/* Map old token names → new tokens */
+/* These properties carry over because components reference CSS variables by name.
+   We simply redefine the old var names to our new palette values. */
+
+/* Old token compatibility shim */
+:root {
+  /* Backgrounds */
+  --bg-deep:    var(--bg-base);
+  --bg-panel:   var(--bg-surface);
+  --bg-overlay: var(--bg-hover);
+
+  /* Accent shim */
+  --accent-light: #4ae8d0;
+  --accent-dark:  var(--accent-muted);
+  --accent-dim:   rgba(56, 217, 192, 0.12);
+  --accent-edge:  rgba(56, 217, 192, 0.35);
+  --accent-hover: rgba(56, 217, 192, 0.2);
+  --accent-glow:  rgba(56, 217, 192, 0.18);
+
+  /* Text shim */
+  --text-primary:   var(--tx-1);
+  --text-secondary: var(--tx-2);
+  --text-tertiary:  var(--tx-3);
+  --text-label:     var(--tx-3);
+  --text-muted:     var(--tx-4);
+
+  /* Border shim */
+  --border-subtle: var(--br-1);
+  --border-soft:   var(--br-2);
+  --border-mid:    var(--br-3);
+  --border-strong: rgba(255,255,255,0.22);
+  --border-accent: rgba(56,217,192,0.3);
+  --border-accent-bright: rgba(56,217,192,0.55);
+
+  /* Shadow shim */
+  --shadow-sm: var(--sh-sm);
+  --shadow-md: var(--sh-md);
+  --shadow-lg: var(--sh-lg);
+  --shadow-xl: 0 24px 56px rgba(0,0,0,0.7);
+  --shadow-accent: 0 4px 20px rgba(56,217,192,0.15);
+  --shadow-accent-lg: 0 8px 32px rgba(56,217,192,0.2);
+
+  /* Radius shim */
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+}
+
+/* ═══════════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════════ */
+.text-accent  { color: var(--accent); }
+.text-muted   { color: var(--tx-3); }
+.text-display { font-family: var(--font-ui); }
+.glow-accent  { color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
+
+/* Spacing helpers */
+.card-padding    { padding: 1.25rem; }
+.card-padding-sm { padding: 0.875rem; }
+.section-padding { padding: 1.25rem; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 640px) {
+  body { padding: 0 10px; }
+  .section-card { margin-bottom: 1rem; border-radius: var(--r-lg); }
+  .section-header { padding: 0.75rem 1rem; font-size: 0.75rem; }
+}
+
+/* ═══════════════════════════════════════════
+   REDUCED MOTION
+═══════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.05ms !important;
+  }
+}
