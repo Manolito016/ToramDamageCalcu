@@ -85,7 +85,7 @@ export function FillStatSimulator() {
   }, [equipmentType, weaponSubtype, maxPotential, basePotential, smithProfLevel, anvilType, quantity, statEntries, positiveStats, negativeStats]);
 
   // Calculations
-  const usedPotential = statEntries.reduce((total, entry) => {
+  const usedPotential = statEntries.reduce((total: number, entry: StatEntry) => {
     return total + calculatePOTCost(entry.statName, entry.value, entry.isNegative);
   }, 0);
 
@@ -116,7 +116,7 @@ export function FillStatSimulator() {
   
   // Material cost per step (highest mats per single step)
   const highestStepCost = statEntries.length > 0 
-    ? Math.max(...statEntries.map(entry => calculatePOTCost(entry.statName, entry.value, entry.isNegative) * 10))
+    ? Math.max(...statEntries.map((entry: StatEntry) => calculatePOTCost(entry.statName, entry.value, entry.isNegative) * 10))
     : 0;
   const finalHighestStepCost = Math.max(0, highestStepCost - (highestStepCost * totalReduction / 100));
   
@@ -126,8 +126,8 @@ export function FillStatSimulator() {
   // Handlers
   const addPositiveStats = () => {
     const newEntries = positiveStats
-      .filter(s => s.stat && s.value > 0)
-      .map(s => ({
+      .filter((s: {stat: string, value: number}) => s.stat && s.value > 0)
+      .map((s: {stat: string, value: number}) => ({
         id: `${Date.now()}-${Math.random()}`,
         statName: s.stat,
         value: s.value,
@@ -146,8 +146,8 @@ export function FillStatSimulator() {
   
   const addNegativeStats = () => {
     const newEntries = negativeStats
-      .filter(s => s.stat && s.value > 0)
-      .map(s => ({
+      .filter((s: {stat: string, value: number}) => s.stat && s.value > 0)
+      .map((s: {stat: string, value: number}) => ({
         id: `${Date.now()}-${Math.random()}`,
         statName: s.stat,
         value: s.value,
@@ -165,7 +165,7 @@ export function FillStatSimulator() {
   };
   
   const removeStat = (id: string) => {
-    setStatEntries(statEntries.filter(entry => entry.id !== id));
+    setStatEntries(statEntries.filter((entry: StatEntry) => entry.id !== id));
   };
 
   const clearAll = () => {
@@ -177,7 +177,7 @@ export function FillStatSimulator() {
 
   const copyFormula = () => {
     const formulaText = statEntries
-      .map(entry => `${entry.statName} ${entry.isNegative ? '-' : '+'}${entry.value}`)
+      .map((entry: StatEntry) => `${entry.statName} ${entry.isNegative ? '-' : '+'}${entry.value}`)
       .join(', ');
     
     navigator.clipboard.writeText(formulaText).then(() => {
@@ -423,7 +423,7 @@ export function FillStatSimulator() {
               </label>
               <select
                 value={anvilType}
-                onChange={(e) => setAnvilType(e.target.value as any)}
+                onChange={(e) => setAnvilType(e.target.value as 'none' | 'craftsman' | 'blacksmith' | 'master' | 'master2')}
                 style={{
                   width: '100%',
                   padding: '0.75rem',

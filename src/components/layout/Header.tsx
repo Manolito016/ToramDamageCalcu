@@ -1,4 +1,5 @@
 import { useCalculator } from '../../context/CalculatorContext';
+import { exportBuild, importBuild } from '../../utils/exportImport';
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -16,6 +17,37 @@ export function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
     if (window.confirm('Are you sure you want to reset all data? This cannot be undone.')) {
       resetState();
     }
+  };
+
+  const handleExport = () => {
+    try {
+      exportBuild(state);
+    } catch (error) {
+      console.error('Failed to export build:', error);
+      alert('Failed to export build');
+    }
+  };
+
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        const data = await importBuild(file);
+        if (window.confirm(`Import build "${data.name}"? This will replace your current build.`)) {
+          localStorage.setItem('toram-calculator-state', JSON.stringify(data.state));
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Failed to import build:', error);
+        alert('Failed to import build: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      }
+    };
+    input.click();
   };
 
   return (
@@ -135,6 +167,34 @@ export function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
+            {/* Export */}
+            <button
+              onClick={handleExport}
+              className="btn-secondary"
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px' }}
+              title="Export build to JSON file"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span style={{ fontSize: '0.6875rem', fontWeight: 500 }}>Export</span>
+            </button>
+
+            {/* Import */}
+            <button
+              onClick={handleImport}
+              className="btn-secondary"
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px' }}
+              title="Import build from JSON file"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              <span style={{ fontSize: '0.6875rem', fontWeight: 500 }}>Import</span>
+            </button>
+
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}

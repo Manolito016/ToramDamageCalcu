@@ -2,17 +2,30 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { CalculatorProvider } from './context/CalculatorContext'
 import { MainLayout } from './components/layout/MainLayout'
 import { FillStatSimulator } from './pages/FillStatSimulator'
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
+import { ErrorBoundary } from './components/ErrorBoundary'
 
 function App() {
   return (
-    <Router>
-      <CalculatorProvider>
-        <Routes>
-          <Route path="/" element={<MainLayout />} />
-          <Route path="/fill-stat" element={<MainLayout><FillStatSimulator /></MainLayout>} />
-        </Routes>
-      </CalculatorProvider>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <CalculatorProvider>
+          <AppContent />
+        </CalculatorProvider>
+      </Router>
+    </ErrorBoundary>
+  )
+}
+
+function AppContent() {
+  // Enable keyboard shortcuts
+  useKeyboardShortcuts();
+
+  return (
+    <Routes>
+      <Route path="/" element={<MainLayout />} />
+      <Route path="/fill-stat" element={<MainLayout><FillStatSimulator /></MainLayout>} />
+    </Routes>
   )
 }
 

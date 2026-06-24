@@ -265,6 +265,47 @@ export function ResultsPanel() {
   // Re-aggregate modifiers from state since calculatedStats doesn't expose them
   const modifiers = aggregateAllModifiers(state);
 
+  const handleCopyStats = async () => {
+    const statsText = `Toram Online Build Stats
+Generated: ${new Date().toLocaleString()}
+
+=== DEFENSIVE ===
+MaxHP: ${defensive.maxHP}
+MaxMP: ${defensive.maxMP}
+DEF: ${defensive.def}
+MDEF: ${defensive.mdef}
+Dodge (FLEE): ${defensive.dodge}
+
+=== OFFENSIVE (PHYSICAL) ===
+ATK: ${offensivePhysical.atk}
+ATK (Critical): ${offensivePhysical.atkCritical}
+Stability: ${offensivePhysical.stability}%
+ASPD: ${offensivePhysical.aspd}
+Critical Rate: ${offensivePhysical.criticalRate}%
+Critical Damage: ${offensivePhysical.criticalDamage}%
+
+=== OFFENSIVE (MAGIC) ===
+MATK: ${offensiveMagic.matk}
+Magic Stability: ${offensiveMagic.magicStability}%
+CSPD: ${offensiveMagic.cspd}
+Magic Critical Rate: ${offensiveMagic.magicCriticalRate}%
+Magic Critical Damage: ${offensiveMagic.magicCriticalDamage}%
+
+=== OFFENSIVE (GENERAL) ===
+Short Range Damage: ${offensiveGeneral.shortRangeDamage}%
+Long Range Damage: ${offensiveGeneral.longRangeDamage}%
+Anticipate: ${offensiveGeneral.anticipate}%
+Guard Break: ${offensiveGeneral.guardBreak}%`;
+
+    try {
+      await navigator.clipboard.writeText(statsText);
+      alert('Stats copied to clipboard!');
+    } catch (error) {
+      console.error('Failed to copy stats:', error);
+      alert('Failed to copy stats');
+    }
+  };
+
   return (
     <section className="section-card">
       <div className="section-header">
@@ -272,6 +313,18 @@ export function ResultsPanel() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
         Calculated Stats
+        <button
+          onClick={handleCopyStats}
+          className="btn-secondary"
+          style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', fontSize: '0.75rem' }}
+          title="Copy stats to clipboard"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+          </svg>
+          Copy
+        </button>
       </div>
 
       <div className="p-3 space-y-3">
