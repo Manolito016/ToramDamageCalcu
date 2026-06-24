@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useMemo, useCallback, useRef, useEffect } from 'react';
 import type { 
   CalculatorState, 
   CharacterState, 
@@ -235,14 +235,16 @@ type Action =
 function calculatorReducer(state: CalculatorState, action: Action): CalculatorState {
   switch (action.type) {
     case 'SET_LEVEL':
-      return { ...state, character: { ...state.character, level: action.payload } };
+      const clampedLevel = Math.max(1, action.payload);
+      return { ...state, character: { ...state.character, level: clampedLevel } };
     
     case 'SET_BASE_STAT':
+      const clampedValue = Math.max(1, Math.min(999, action.value));
       return {
         ...state,
         character: {
           ...state.character,
-          baseStats: { ...state.character.baseStats, [action.stat]: action.value }
+          baseStats: { ...state.character.baseStats, [action.stat]: clampedValue }
         }
       };
     
@@ -568,13 +570,30 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
 
   const [state, dispatch] = useReducer(calculatorReducer, initialState, loadSavedState);
 
-  // Save state to localStorage whenever it changes
-  React.useEffect(() => {
-    try {
-      localStorage.setItem('toram-calculator-state', JSON.stringify(state));
-    } catch (e) {
-      console.error('Failed to save state:', e);
+  // Debounced save to localStorage
+  const saveTimerRef = useRef<number | null>(null);
+  
+  useEffect(() => {
+    // Clear existing timer
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
     }
+    
+    // Set new timer to save after 500ms of inactivity
+    saveTimerRef.current = setTimeout(() => {
+      try {
+        localStorage.setItem('toram-calculator-state', JSON.stringify(state));
+      } catch (e) {
+        console.error('Failed to save state:', e);
+      }
+    }, 500);
+    
+    // Cleanup on unmount or next state change
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+    };
   }, [state]);
 
   // Apply theme on mount

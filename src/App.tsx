@@ -1,11 +1,18 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { CalculatorProvider } from './context/CalculatorContext'
 import { MainLayout } from './components/layout/MainLayout'
+import { FillStatSimulator } from './pages/FillStatSimulator'
 
 function App() {
   return (
-    <CalculatorProvider>
-      <MainLayout />
-    </CalculatorProvider>
+    <Router>
+      <CalculatorProvider>
+        <Routes>
+          <Route path="/" element={<MainLayout />} />
+          <Route path="/fill-stat" element={<MainLayout><FillStatSimulator /></MainLayout>} />
+        </Routes>
+      </CalculatorProvider>
+    </Router>
   )
 }
 

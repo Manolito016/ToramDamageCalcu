@@ -137,7 +137,7 @@ export function CharacterSection() {
               type="number"
               value={character.level}
               onChange={e => setLevel(parseInt(e.target.value) || 1)}
-              min={1} max={300}
+              min={1}
               style={NUM_INPUT}
               onFocus={focusTeal} onBlur={blurReset}
             />

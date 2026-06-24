@@ -146,7 +146,7 @@ function ElementalDamageMatrixComponent({
   modifiers 
 }: { 
   int: number; 
-  weaponType: string; 
+  weaponType: import('../../types').MainWeaponType; 
   weaponElement: Element; 
   modifiers: Record<string, { flat: number; percent: number }>; 
 }) {
@@ -154,7 +154,7 @@ function ElementalDamageMatrixComponent({
   const dteStats = getDTEStats(modifiers);
   
   // Calculate damage matrix
-  const damageMatrix = calculateElementalDamageMatrix(int, weaponType as any, weaponElement, dteStats);
+  const damageMatrix = calculateElementalDamageMatrix(int, weaponType, weaponElement, dteStats);
   
   return (
     <div>
@@ -345,8 +345,8 @@ export function ResultsPanel() {
       {/* Elemental Damage Matrix */}
       <StatGroup title="Elemental Damage">
         <ElementalDamageMatrixComponent 
-          int={state.character.baseStats.INT}
-          weaponType={state.mainWeapon.type}
+          int={Math.floor(state.character.baseStats.INT * (1 + (modifiers['INT %']?.percent || 0) / 100)) + (modifiers['INT']?.flat || 0)}
+          weaponType={state.mainWeapon.type as import('../../types').MainWeaponType}
           weaponElement={(state.mainWeapon.element || 'Neutral') as Element}
           modifiers={modifiers as Record<string, { flat: number; percent: number }>}
         />

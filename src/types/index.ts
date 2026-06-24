@@ -5,11 +5,6 @@ export type BaseStat = 'STR' | 'INT' | 'VIT' | 'AGI' | 'DEX';
 export type PersonalStat = 'CRT' | 'LUK' | 'MTL' | 'TEC';
 export type Element = 'Neutral' | 'Fire' | 'Water' | 'Wind' | 'Earth' | 'Light' | 'Dark';
 
-export interface SkillInfo {
-  level: SkillLevel;
-  element?: Element | 'User'; // 'User' means follows character's element
-}
-
 export interface BaseStats {
   STR: number;
   INT: number;

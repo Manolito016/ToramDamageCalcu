@@ -40,6 +40,7 @@ import {
 } from './specialStats';
 import { defaultWeaponStability } from '../../data/weaponTypes';
 import { elementAdvantageMatrix } from '../../data/elements';
+import type { Element } from '../../data/elements';
 
 // Aggregate all stat modifiers from equipment, avatar, food, skills, etc.
 export interface StatSource {
@@ -217,6 +218,96 @@ function applySkillModifiers(
     addModifier('Critical Rate', skills.criticalSpear.level * 0.5);
   }
   
+  // Katana - Bushido: +1% ATK per level
+  if (skills.bushido.level > 0 && mainWeaponType === 'Katana') {
+    addModifier('ATK %', skills.bushido.level);
+  }
+  
+  // Dual Wield Skills
+  if (skills.dualSwordMastery.level > 0 && mainWeaponType === 'Dual Wield') {
+    addModifier('ATK %', skills.dualSwordMastery.level * 0.5);
+    addModifier('Weapon ATK %', skills.dualSwordMastery.level * 2);
+  }
+  
+  if (skills.dualSwordControl.level > 0 && mainWeaponType === 'Dual Wield') {
+    addModifier('Stability %', skills.dualSwordControl.level * 2);
+  }
+  
+  if (skills.godspeed.level > 0 && mainWeaponType === 'Dual Wield') {
+    addModifier('ASPD %', skills.godspeed.level * 2);
+    addModifier('ASPD', skills.godspeed.level * 10);
+  }
+  
+  // Two-Handed - No Sub weapon bonus
+  if (skills.twoHanded.level > 0 && subWeaponType === 'None') {
+    addModifier('ATK %', skills.twoHanded.level * 2);
+    addModifier('Stability %', skills.twoHanded.level);
+  }
+  
+  // Knuckle Skills
+  if (skills.aggravate.level > 0 && mainWeaponType === 'Knuckle') {
+    addModifier('Critical Damage %', skills.aggravate.level * 2);
+  }
+  
+  if (skills.strongChaseAttack.level > 0 && mainWeaponType === 'Knuckle') {
+    addModifier('Additional Melee %', skills.strongChaseAttack.level * 2);
+  }
+  
+  if (skills.martialDiscipline.level > 0 && mainWeaponType === 'Knuckle') {
+    addModifier('Accuracy', skills.martialDiscipline.level * 2);
+    addModifier('ATK', skills.martialDiscipline.level * 3);
+  }
+  
+  // Magic Warrior Skills
+  if (skills.magicWarriorMastery.level > 0) {
+    // Adds MATK based on ATK (simplified: +2% MATK per level)
+    addModifier('MATK %', skills.magicWarriorMastery.level * 2);
+  }
+  
+  if (skills.conversion.level > 0) {
+    // Converts some stats (simplified: +1% all resistances per level)
+    addModifier('Physical Resistance %', skills.conversion.level);
+    addModifier('Magic Resistance %', skills.conversion.level);
+  }
+  
+  // Magic - Spell Burst
+  if (skills.spellBurst.level > 0) {
+    addModifier('Magic Pierce %', skills.spellBurst.level * 2);
+    addModifier('Additional Magic %', skills.spellBurst.level);
+  }
+  
+  // Bare Hand / EX Skills
+  if (skills.ultimaQiCharge.level > 0 && mainWeaponType === 'Bare Hand') {
+    addModifier('Weapon ATK', skills.ultimaQiCharge.level * 10);
+  }
+  
+  if (skills.hiddenTalent.level > 0 && mainWeaponType === 'Bare Hand') {
+    addModifier('ATK %', skills.hiddenTalent.level);
+    addModifier('MATK %', skills.hiddenTalent.level);
+  }
+  
+  // Shield - Aftershield
+  if (skills.aftershield.level > 0 && subWeaponType === 'Shield') {
+    addModifier('Guard Power %', skills.aftershield.level * 3);
+    addModifier('Guard Recharge %', skills.aftershield.level * 2);
+  }
+  
+  // Samurai Archery - Bow/Bowgun
+  if (skills.samuraiArchery.level > 0 && (mainWeaponType === 'Bow' || mainWeaponType === 'Bowgun')) {
+    addModifier('Critical Rate', skills.samuraiArchery.level * 0.5);
+    addModifier('Accuracy', skills.samuraiArchery.level);
+  }
+  
+  // Hunter Bowgun - Bowgun specific
+  if (skills.hunterBowgun.level > 0 && mainWeaponType === 'Bowgun') {
+    addModifier('Physical Pierce %', skills.hunterBowgun.level * 2);
+  }
+  
+  // Magic Skin
+  if (skills.magicSkin.level > 0) {
+    addModifier('MDEF %', skills.magicSkin.level * 2);
+  }
+  
   // Battle Skills
   if (skills.hpBoost.level > 0) {
     addModifier('MaxHP %', skills.hpBoost.level * 2);
@@ -302,28 +393,47 @@ function applySkillModifiers(
   
   // Camouflage Skill - Bow/Bowgun specific
   if (skills.camouflage.level > 0 && (mainWeaponType === 'Bow' || mainWeaponType === 'Bowgun')) {
-    // Passive bonus - always active
-    if (mainWeaponType === 'Bowgun') {
-      // Bowgun gets +20 Critical Rate as passive
-      addModifier('Critical Rate', 20);
-    } else if (mainWeaponType === 'Bow') {
-      // Bow gets -20 Aggro as passive
-      addModifier('Aggro %', -20);
-    }
-
-    // Active bonus - only when camouflage is toggled active
+    
     if (skills.camouflage.active) {
-      if (mainWeaponType === 'Bowgun') {
-        // Bowgun gets additional +40 Critical Rate when active
-        addModifier('Critical Rate', 40);
-      } else if (mainWeaponType === 'Bow') {
-        // Bow gets additional -40 Aggro when active
-        addModifier('Aggro %', -40);
+      // ===== ACTIVE EFFECTS (When Cast) - OVERRIDE passive values =====
+      // Lasts 180 seconds or until targeted by monster
+      
+      // Critical Rate: 4 × Skill Level (replaces Bowgun passive entirely)
+      // Applied to ALL weapons when active
+      const activeCrit = 4 * skills.camouflage.level;
+      addModifier('Critical Rate', activeCrit);
+      
+      // Aggro Reduction: (20 + 4 × Skill Level)% (replaces Bow passive entirely)
+      // Applied to ALL weapons when active
+      const activeAggroReduction = 20 + 4 * skills.camouflage.level;
+      addModifier('Aggro %', -activeAggroReduction);
+      
+      // ATK: ⌊(Player Level / 2) × (Skill Level / 10)⌋
+      let atkBoost = Math.floor((characterLevel / 2) * (skills.camouflage.level / 10));
+      
+      // Bow/Bowgun Bonus: Double the ATK calculation
+      if (mainWeaponType === 'Bow' || mainWeaponType === 'Bowgun') {
+        atkBoost *= 2;
       }
-
-      // Additional bonuses when camouflage is active
-      addModifier('ATK', 10); // +10 ATK when active
-      addModifier('Aggro %', -30); // Additional -30% Aggro when active
+      
+      addModifier('ATK', atkBoost);
+      
+    } else {
+      // ===== PASSIVE EFFECTS (Always Active) - Only when NOT cast =====
+      
+      if (mainWeaponType === 'Bowgun') {
+        // Bowgun passive: Critical Rate = 2 × Skill Level
+        // At Lv10: +20 Critical Rate (permanent)
+        const passiveCrit = 2 * skills.camouflage.level;
+        addModifier('Critical Rate', passiveCrit);
+      }
+      
+      if (mainWeaponType === 'Bow') {
+        // Bow passive: Aggro Reduction from MP = (10 + 2 × Skill Level)%
+        // At Lv10: -30% Aggro from MP (permanent)
+        const passiveAggroReduction = 10 + 2 * skills.camouflage.level;
+        addModifier('Aggro %', -passiveAggroReduction);
+      }
     }
   }
   
@@ -502,7 +612,7 @@ export function calculateAllStats(state: CalculatorState): CalculatedStats {
     const baseModifier = getMod(`% Stronger Against ${targetElement}`).percent;
     
     // Calculate advantage multiplier based on user element vs target element
-    const advantageMultiplier = (elementAdvantageMatrix as any)[userElement][targetElement];
+    const advantageMultiplier = elementAdvantageMatrix[userElement as Element][targetElement as Element] ?? 1;
     
     // Calculate effective power starting from base 0% (no inherent damage)
     // The "base" represents additional damage percentage beyond the standard amount
@@ -531,7 +641,7 @@ export function calculateAllStats(state: CalculatorState): CalculatedStats {
     const baseModifier = getMod(`% Stronger Against ${targetElement}`).percent;
     
     // Calculate advantage multiplier based on user element vs target element
-    const advantageMultiplier = (elementAdvantageMatrix as any)[userElement][targetElement];
+    const advantageMultiplier = elementAdvantageMatrix[userElement as Element][targetElement as Element] ?? 1;
     
     // Calculate effective power starting from base 0%
     let effectivePower = baseModifier; // Start with %Stronger Against bonus

@@ -16,8 +16,8 @@ export function calculateMaxStatPoints(level: number): number {
 
 // Calculate MaxHP
 export function calculateMaxHP(level: number, vit: number, modifiers: { flat: number; percent: number }): number {
-  // Formula: 93 + floor((VIT + 22.4) * Level / 3)
-  const baseHP = 93 + floorDivide((vit + 22.4) * level, 3);
+  // Formula: 93 + floor((VIT + 22.41) * Level / 3)
+  const baseHP = 93 + floorDivide((vit + 22.41) * level, 3);
   const modifiedHP = baseHP * (1 + modifiers.percent / 100) + modifiers.flat;
   return Math.floor(modifiedHP);
 }
@@ -123,8 +123,11 @@ export function calculateMotionSpeed(aspd: number): number {
 export function calculateMagicStability(stability: number): { min: number; max: number } {
   // Formula: floor((100 + Stability) / 2), capped at 90~100%
   const magicStab = Math.floor((100 + stability) / 2);
-  if (magicStab > 100) {
-    return { min: 90, max: Math.min(100 + (magicStab - 100) * 2, 100) };
-  }
-  return { min: Math.max(90, magicStab), max: 100 };
+  
+  // Magic stability is always clamped between 90-100%
+  // Values above 100 or below 90 are normalized to this range
+  const min = Math.max(90, Math.min(100, magicStab));
+  const max = 100;
+  
+  return { min, max };
 }

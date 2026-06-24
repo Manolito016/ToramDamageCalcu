@@ -12,6 +12,7 @@ export function clamp(value: number, min: number, max: number): number {
 
 // Apply soft cap (efficiency halved after every threshold)
 export function applySoftCap(value: number, threshold: number): number {
+  if (value <= 0) return 0;
   if (value <= threshold) return value;
   
   let remaining = value;
