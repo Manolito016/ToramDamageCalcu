@@ -6,7 +6,7 @@ import { armorTypeOptions } from '../../data/armorTypes';
 import { refinementLevels } from '../../data/refinementTable';
 import { fullStatOptions } from '../../data/statLists';
 import { mainWeaponElementOptions } from '../../data/elements';
-import type { StatOption } from '../../types';
+import type { StatOption, EquipmentCrystal } from '../../types';
 
 const refinementOptions = refinementLevels.map(r => ({ value: r, label: r }));
 
@@ -152,7 +152,7 @@ function CrystalPair({
   crystal1, crystal2,
   onRowChange1, onRowChange2,
 }: {
-  crystal1: any; crystal2: any;
+  crystal1: EquipmentCrystal; crystal2: EquipmentCrystal;
   onRowChange1: (i: number, s: string, v: number) => void;
   onRowChange2: (i: number, s: string, v: number) => void;
 }) {
