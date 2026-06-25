@@ -42,7 +42,8 @@ export function ModifiersSection() {
                       type="number"
                       value={slot.value}
                       onChange={(e) => setAvatar('accessory', index, slot.stat, parseInt(e.target.value) || 0)}
-                      min={0}
+                      min={-999}
+                      max={999}
                       className="px-2 py-1 text-sm rounded focus:outline-none"
                       style={{
                         background: 'var(--bg-float)',
@@ -74,7 +75,8 @@ export function ModifiersSection() {
                       type="number"
                       value={slot.value}
                       onChange={(e) => setAvatar('top', index, slot.stat, parseInt(e.target.value) || 0)}
-                      min={0}
+                      min={-999}
+                      max={999}
                       className="px-2 py-1 text-sm rounded focus:outline-none"
                       style={{
                         background: 'var(--bg-float)',
@@ -106,7 +108,8 @@ export function ModifiersSection() {
                       type="number"
                       value={slot.value}
                       onChange={(e) => setAvatar('bottom', index, slot.stat, parseInt(e.target.value) || 0)}
-                      min={0}
+                      min={-999}
+                      max={999}
                       className="px-2 py-1 text-sm rounded focus:outline-none"
                       style={{
                         background: 'var(--bg-float)',
@@ -147,7 +150,8 @@ export function ModifiersSection() {
                       type="number"
                       value={slot.value}
                       onChange={(e) => setFoodPotion('food', index, slot.stat, parseInt(e.target.value) || 0)}
-                      min={0}
+                      min={-999}
+                      max={999}
                       className="px-2 py-1 text-sm rounded focus:outline-none"
                       style={{
                         background: 'var(--bg-float)',
@@ -179,7 +183,8 @@ export function ModifiersSection() {
                       type="number"
                       value={slot.value}
                       onChange={(e) => setFoodPotion('potion1', index, slot.stat, parseInt(e.target.value) || 0)}
-                      min={0}
+                      min={-999}
+                      max={999}
                       className="px-2 py-1 text-sm rounded focus:outline-none"
                       style={{
                         background: 'var(--bg-float)',
@@ -211,7 +216,8 @@ export function ModifiersSection() {
                       type="number"
                       value={slot.value}
                       onChange={(e) => setFoodPotion('potion2', index, slot.stat, parseInt(e.target.value) || 0)}
-                      min={0}
+                      min={-999}
+                      max={999}
                       className="px-2 py-1 text-sm rounded focus:outline-none"
                       style={{
                         background: 'var(--bg-float)',

@@ -67,7 +67,8 @@ export function CrystalSlot({ label, crystal, options, onRowChange }: CrystalSlo
                 type="number"
                 value={row.value}
                 onChange={(e) => onRowChange(index, row.stat, parseInt(e.target.value) || 0)}
-                min={0}
+                min={-999}
+                max={999}
                 style={{
                   width: '100%',
                   background: 'var(--bg-base)',

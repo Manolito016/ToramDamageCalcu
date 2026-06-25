@@ -124,7 +124,8 @@ function StatRows({
             type="number"
             value={row.value}
             onChange={e => onChange(i, row.stat, parseInt(e.target.value) || 0)}
-            min={0}
+            min={-999}
+            max={999}
             style={{
               width: '100%',
               background: 'var(--bg-float)',
