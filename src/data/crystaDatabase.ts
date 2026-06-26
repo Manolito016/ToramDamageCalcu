@@ -1,5 +1,5 @@
 // Crysta Database (auto-generated from Coryn Club API)
-// Generated on: 2026-06-26T16:27:14.095Z
+// Generated on: 2026-06-26T16:44:09.633Z
 // Complete crysta data for all 5 types
 
 export interface CrystaItem {
@@ -1921,7 +1921,50 @@ export const normalCrysta: CrystaItem[] = [
     "name": "Megiston",
     "type_id": 20,
     "type_label": "[Normal Crysta]",
-    "stats": [],
+    "stats": [
+      {
+        "effect_id": 3,
+        "effect_name": "STR",
+        "amount": 1,
+        "applies_to": 0
+      },
+      {
+        "effect_id": 5,
+        "effect_name": "INT",
+        "amount": 1,
+        "applies_to": 0
+      },
+      {
+        "effect_id": 7,
+        "effect_name": "VIT",
+        "amount": 1,
+        "applies_to": 0
+      },
+      {
+        "effect_id": 9,
+        "effect_name": "AGI",
+        "amount": 1,
+        "applies_to": 0
+      },
+      {
+        "effect_id": 11,
+        "effect_name": "DEX",
+        "amount": 1,
+        "applies_to": 0
+      },
+      {
+        "effect_id": 17,
+        "effect_name": "MaxHP",
+        "amount": 100,
+        "applies_to": 0
+      },
+      {
+        "effect_id": 19,
+        "effect_name": "MaxMP",
+        "amount": 50,
+        "applies_to": 0
+      }
+    ],
     "meta": {
       "badge": "",
       "note": ""
@@ -3700,7 +3743,38 @@ export const weaponCrysta: CrystaItem[] = [
     "name": "Cursed Crysta",
     "type_id": 21,
     "type_label": "[Weapon Crysta]",
-    "stats": [],
+    "stats": [
+      {
+        "effect_id": 21,
+        "effect_name": "ATK %",
+        "amount": 5,
+        "applies_to": 0
+      },
+      {
+        "effect_id": 23,
+        "effect_name": "MATK %",
+        "amount": 5,
+        "applies_to": 0
+      },
+      {
+        "effect_id": 24,
+        "effect_name": "Stability %",
+        "amount": 5,
+        "applies_to": 0
+      },
+      {
+        "effect_id": 71,
+        "effect_name": "Motion Speed %",
+        "amount": 5,
+        "applies_to": 0
+      },
+      {
+        "effect_id": 172,
+        "effect_name": "Recoil %",
+        "amount": 20,
+        "applies_to": 0
+      }
+    ],
     "meta": {
       "badge": "",
       "note": ""
@@ -5663,44 +5737,7 @@ export const additionalCrysta: CrystaItem[] = [
     "name": "Shadow Devil Cavalier",
     "type_id": 23,
     "type_label": "[Additional Crysta]",
-    "stats": [
-      {
-        "effect_id": 19,
-        "effect_name": "MaxMP",
-        "amount": -100,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 21,
-        "effect_name": "ATK %",
-        "amount": 6,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 24,
-        "effect_name": "Stability %",
-        "amount": 6,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 55,
-        "effect_name": "Light resistance %",
-        "amount": -10,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 69,
-        "effect_name": "Short Range Damage %",
-        "amount": 6,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 104,
-        "effect_name": "Revive Time %",
-        "amount": 10,
-        "applies_to": 0
-      }
-    ],
+    "stats": [],
     "meta": {
       "badge": "",
       "note": ""
@@ -5813,38 +5850,7 @@ export const additionalCrysta: CrystaItem[] = [
     "name": "Giant Pelulu",
     "type_id": 23,
     "type_label": "[Additional Crysta]",
-    "stats": [
-      {
-        "effect_id": 18,
-        "effect_name": "MaxHP %",
-        "amount": 30,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 19,
-        "effect_name": "MaxMP",
-        "amount": -100,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 25,
-        "effect_name": "Physical Pierce %",
-        "amount": -10,
-        "applies_to": 32768
-      },
-      {
-        "effect_id": 42,
-        "effect_name": "Critical Rate %",
-        "amount": 50,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 69,
-        "effect_name": "Short Range Damage %",
-        "amount": 10,
-        "applies_to": 0
-      }
-    ],
+    "stats": [],
     "meta": {
       "badge": "",
       "note": ""
@@ -6287,32 +6293,7 @@ export const additionalCrysta: CrystaItem[] = [
     "name": "Yashiro Azuki's Dad",
     "type_id": 23,
     "type_label": "[Additional Crysta]",
-    "stats": [
-      {
-        "effect_id": 21,
-        "effect_name": "ATK %",
-        "amount": 4,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 38,
-        "effect_name": "ASPD %",
-        "amount": 20,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 61,
-        "effect_name": "Aggro %",
-        "amount": -10,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 69,
-        "effect_name": "Short Range Damage %",
-        "amount": 3,
-        "applies_to": 0
-      }
-    ],
+    "stats": [],
     "meta": {
       "badge": "",
       "note": ""
@@ -6431,26 +6412,7 @@ export const additionalCrysta: CrystaItem[] = [
     "name": "Altoblepas",
     "type_id": 23,
     "type_label": "[Additional Crysta]",
-    "stats": [
-      {
-        "effect_id": 12,
-        "effect_name": "DEX %",
-        "amount": 1,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 34,
-        "effect_name": "Accuracy %",
-        "amount": -20,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 43,
-        "effect_name": "Critical Damage",
-        "amount": 4,
-        "applies_to": 0
-      }
-    ],
+    "stats": [],
     "meta": {
       "badge": "",
       "note": ""
@@ -6731,26 +6693,7 @@ export const additionalCrysta: CrystaItem[] = [
     "name": "Grylle",
     "type_id": 23,
     "type_label": "[Additional Crysta]",
-    "stats": [
-      {
-        "effect_id": 17,
-        "effect_name": "MaxHP",
-        "amount": 500,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 28,
-        "effect_name": "DEF %",
-        "amount": 5,
-        "applies_to": 0
-      },
-      {
-        "effect_id": 58,
-        "effect_name": "Guard Power %",
-        "amount": 5,
-        "applies_to": 0
-      }
-    ],
+    "stats": [],
     "meta": {
       "badge": "",
       "note": ""
@@ -8650,32 +8593,23 @@ export const allCrysta: CrystaItem[] = [
 ];
 
 /**
- * Search crysta by name or type (sorted alphabetically)
+ * Search crysta by name or type
  */
 export function searchCrysta(query: string): CrystaItem[] {
-  let results: CrystaItem[];
+  if (!query.trim()) return allCrysta;
   
-  if (!query.trim()) {
-    results = allCrysta;
-  } else {
-    const lowerQuery = query.toLowerCase();
-    results = allCrysta.filter(crysta => 
-      crysta.name.toLowerCase().includes(lowerQuery) ||
-      crysta.type_label.toLowerCase().includes(lowerQuery)
-    );
-  }
-  
-  // Sort alphabetically by name
-  return results.sort((a, b) => a.name.localeCompare(b.name));
+  const lowerQuery = query.toLowerCase();
+  return allCrysta.filter(crysta => 
+    crysta.name.toLowerCase().includes(lowerQuery) ||
+    crysta.type_label.toLowerCase().includes(lowerQuery)
+  );
 }
 
 /**
- * Filter crysta by type_id (sorted alphabetically)
+ * Filter crysta by type_id
  */
 export function filterCrystaByType(typeId: number): CrystaItem[] {
-  return allCrysta
-    .filter(crysta => crysta.type_id === typeId)
-    .sort((a, b) => a.name.localeCompare(b.name));
+  return allCrysta.filter(crysta => crysta.type_id === typeId);
 }
 
 /**
@@ -8686,30 +8620,21 @@ export function getCrystaById(id: number): CrystaItem | undefined {
 }
 
 /**
- * Get available crysta types for equipment (sorted alphabetically)
+ * Get available crysta types for equipment
  */
 export function getCrystaForEquipment(equipmentType: 'weapon' | 'armor' | 'additional' | 'special'): CrystaItem[] {
-  let filtered: CrystaItem[];
-  
   switch (equipmentType) {
     case 'weapon':
-      filtered = allCrysta.filter(c => c.type_id === 20 || c.type_id === 21); // Normal + Weapon
-      break;
+      return allCrysta.filter(c => c.type_id === 20 || c.type_id === 21); // Normal + Weapon
     case 'armor':
-      filtered = allCrysta.filter(c => c.type_id === 20 || c.type_id === 22); // Normal + Armor
-      break;
+      return allCrysta.filter(c => c.type_id === 20 || c.type_id === 22); // Normal + Armor
     case 'additional':
-      filtered = allCrysta.filter(c => c.type_id === 20 || c.type_id === 23); // Normal + Additional
-      break;
+      return allCrysta.filter(c => c.type_id === 20 || c.type_id === 23); // Normal + Additional
     case 'special':
-      filtered = allCrysta.filter(c => c.type_id === 20 || c.type_id === 24); // Normal + Special
-      break;
+      return allCrysta.filter(c => c.type_id === 20 || c.type_id === 24); // Normal + Special
     default:
-      filtered = allCrysta;
+      return allCrysta;
   }
-  
-  // Sort alphabetically by name
-  return filtered.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /**
