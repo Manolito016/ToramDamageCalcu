@@ -1,14 +1,35 @@
+import { useState } from 'react';
 import { SelectInput } from './SelectInput';
 import type { EquipmentCrystal } from '../../types';
+import type { CrystaItem } from '../../data/crystaDatabase';
 
 interface CrystalSlotProps {
   label: string;
   crystal: EquipmentCrystal;
   options: { value: string; label: string }[];
   onRowChange: (rowIndex: number, stat: string, value: number) => void;
+  crystaList?: CrystaItem[];
 }
 
-export function CrystalSlot({ label, crystal, options, onRowChange }: CrystalSlotProps) {
+export function CrystalSlot({ label, crystal, options, onRowChange, crystaList }: CrystalSlotProps) {
+  const [selectedCrysta, setSelectedCrysta] = useState<string>('');
+
+  // Handle crysta selection from dropdown
+  const handleCrystaSelect = (crystaId: string) => {
+    setSelectedCrysta(crystaId);
+    
+    if (!crystaId || !crystaList) return;
+    
+    const crysta = crystaList.find(c => c.id === parseInt(crystaId));
+    if (!crysta || !crysta.stats) return;
+    
+    // Auto-fill the 3 stat rows with crysta stats
+    crysta.stats.forEach((stat, index) => {
+      if (index < 3) {
+        onRowChange(index, stat.effect_name, stat.amount);
+      }
+    });
+  };
   return (
     <div style={{
       background: 'var(--bg-float)',
@@ -42,6 +63,43 @@ export function CrystalSlot({ label, crystal, options, onRowChange }: CrystalSlo
           {label}
         </span>
       </div>
+
+      {/* Crysta dropdown */}
+      {crystaList && crystaList.length > 0 && (
+        <div style={{ marginBottom: '0.75rem' }}>
+          <label style={{
+            fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.06em',
+            textTransform: 'uppercase', color: 'var(--tx-3)',
+            display: 'block', marginBottom: '0.3rem',
+          }}>
+            Select Crysta
+          </label>
+          <select
+            value={selectedCrysta}
+            onChange={(e) => handleCrystaSelect(e.target.value)}
+            style={{
+              width: '100%',
+              background: 'var(--bg-base)',
+              border: '1px solid var(--br-2)',
+              borderRadius: 'var(--r-sm)',
+              color: 'var(--tx-1)',
+              fontSize: '0.8rem',
+              padding: '0.4rem 0.5rem',
+              outline: 'none',
+              cursor: 'pointer',
+            }}
+            onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
+            onBlur={e => (e.currentTarget.style.borderColor = 'var(--br-2)')}
+          >
+            <option value="">-- Select a crysta --</option>
+            {crystaList.map(crysta => (
+              <option key={crysta.id} value={crysta.id}>
+                {crysta.name} ({crysta.type_label.replace('[', '').replace(']', '')})
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Rows */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>

@@ -6,6 +6,7 @@ import { armorTypeOptions } from '../../data/armorTypes';
 import { refinementLevels } from '../../data/refinementTable';
 import { fullStatOptions } from '../../data/statLists';
 import { mainWeaponElementOptions } from '../../data/elements';
+import { getCrystaForEquipment, type CrystaItem } from '../../data/crystaDatabase';
 import type { StatOption, EquipmentCrystal } from '../../types';
 
 const refinementOptions = refinementLevels.map(r => ({ value: r, label: r }));
@@ -151,17 +152,19 @@ function StatRows({
 function CrystalPair({
   crystal1, crystal2,
   onRowChange1, onRowChange2,
+  crystaList,
 }: {
   crystal1: EquipmentCrystal; crystal2: EquipmentCrystal;
   onRowChange1: (i: number, s: string, v: number) => void;
   onRowChange2: (i: number, s: string, v: number) => void;
+  crystaList?: CrystaItem[];
 }) {
   return (
     <div style={sectionDivider}>
       <SectionLabel>Crystals</SectionLabel>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-        <CrystalSlot label="Crystal 1" crystal={crystal1} options={fullStatOptions} onRowChange={onRowChange1} />
-        <CrystalSlot label="Crystal 2" crystal={crystal2} options={fullStatOptions} onRowChange={onRowChange2} />
+        <CrystalSlot label="Crystal 1" crystal={crystal1} options={fullStatOptions} onRowChange={onRowChange1} crystaList={crystaList} />
+        <CrystalSlot label="Crystal 2" crystal={crystal2} options={fullStatOptions} onRowChange={onRowChange2} crystaList={crystaList} />
       </div>
     </div>
   );
@@ -205,6 +208,12 @@ export function EquipmentSection() {
   } = useCalculator();
 
   const { mainWeapon, subWeapon, armor, additionalGear, specialGear } = state;
+
+  // Use local database - instant loading, no API needed
+  const weaponCrystaList = getCrystaForEquipment('weapon');
+  const armorCrystaList = getCrystaForEquipment('armor');
+  const additionalCrystaList = getCrystaForEquipment('additional');
+  const specialCrystaList = getCrystaForEquipment('special');
 
   // Create filtered stat options that exclude the selected element
   // For main weapon: empty selection defaults to Neutral internally
@@ -296,6 +305,7 @@ export function EquipmentSection() {
                 crystal2={mainWeapon.crysta2}
                 onRowChange1={(i, s, v) => setMainWeaponCrysta(1, i, s, v)}
                 onRowChange2={(i, s, v) => setMainWeaponCrysta(2, i, s, v)}
+                crystaList={weaponCrystaList}
               />
             </div>
 
@@ -406,6 +416,7 @@ export function EquipmentSection() {
                 crystal2={armor.crysta2}
                 onRowChange1={(i, s, v) => setArmorCrysta(1, i, s, v)}
                 onRowChange2={(i, s, v) => setArmorCrysta(2, i, s, v)}
+                crystaList={armorCrystaList}
               />
             </div>
 
@@ -442,6 +453,7 @@ export function EquipmentSection() {
                 crystal2={additionalGear.crysta2}
                 onRowChange1={(i, s, v) => setAdditionalCrysta(1, i, s, v)}
                 onRowChange2={(i, s, v) => setAdditionalCrysta(2, i, s, v)}
+                crystaList={additionalCrystaList}
               />
             </div>
 
@@ -472,6 +484,7 @@ export function EquipmentSection() {
                 crystal2={specialGear.crysta2}
                 onRowChange1={(i, s, v) => setSpecialCrysta(1, i, s, v)}
                 onRowChange2={(i, s, v) => setSpecialCrysta(2, i, s, v)}
+                crystaList={specialCrystaList}
               />
             </div>
           </div>

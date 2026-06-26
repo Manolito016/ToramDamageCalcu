@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useCalculator } from '../../context/CalculatorContext';
 import type { PassiveSkills, SkillInfo, SkillLevel } from '../../types';
+import { searchPassiveSkills, getSkillCategories, filterSkillsByCategory } from '../../data/passiveSkills';
 
 const skillLevels: SkillLevel[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -205,6 +206,15 @@ function SkillGroup({ title, children }: SkillGroupProps) {
 export function SkillsSection() {
   const { state, setSkill } = useCalculator();
   const { skills } = state;
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
+  // Filter skills based on search and category
+  const filteredSkills = searchPassiveSkills(searchQuery);
+  const categorySkills = selectedCategory === 'All' 
+    ? filteredSkills 
+    : filterSkillsByCategory(selectedCategory);
+  const categories = getSkillCategories();
 
   return (
     <section className="section-card">
@@ -213,6 +223,131 @@ export function SkillsSection() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
         </svg>
         Passive Skills
+      </div>
+
+      {/* Skill Search & Filter */}
+      <div style={{ padding: '0 1.5rem 1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {/* Search Input */}
+          <input
+            type="text"
+            placeholder="🔍 Search skills by name, category, or effect..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              background: 'var(--bg-float)',
+              border: '1px solid var(--br-2)',
+              borderRadius: 'var(--r-sm)',
+              color: 'var(--tx-1)',
+              fontSize: '0.85rem',
+              padding: '0.5rem 0.75rem',
+              outline: 'none',
+            }}
+            onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
+            onBlur={e => (e.currentTarget.style.borderColor = 'var(--br-2)')}
+          />
+
+          {/* Category Filter */}
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {categories.map(category => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                style={{
+                  padding: '0.375rem 0.75rem',
+                  background: selectedCategory === category ? 'var(--accent)' : 'var(--bg-float)',
+                  border: `1px solid ${selectedCategory === category ? 'var(--accent)' : 'var(--br-2)'}`,
+                  borderRadius: 'var(--r-sm)',
+                  color: selectedCategory === category ? '#000' : 'var(--tx-2)',
+                  fontWeight: 600,
+                  fontSize: '0.75rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+
+          {/* Quick Skill Selector */}
+          {searchQuery && categorySkills.length > 0 && (
+            <div style={{
+              background: 'var(--bg-raised)',
+              border: '1px solid var(--br-1)',
+              borderRadius: 'var(--r-md)',
+              padding: '0.75rem',
+              maxHeight: '200px',
+              overflowY: 'auto',
+            }}>
+              <div style={{
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                color: 'var(--tx-3)',
+                marginBottom: '0.5rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}>
+                Quick Select ({categorySkills.length} skills)
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+                {categorySkills.slice(0, 10).map(skill => {
+                  const currentLevel = skills[skill.id as keyof PassiveSkills]?.level || 0;
+                  return (
+                    <div
+                      key={skill.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0.5rem',
+                        background: 'var(--bg-float)',
+                        border: '1px solid var(--br-2)',
+                        borderRadius: 'var(--r-sm)',
+                      }}
+                    >
+                      <div style={{ flex: 1 }}>
+                        <div style={{
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          color: 'var(--tx-1)',
+                        }}>
+                          {skill.name}
+                        </div>
+                        <div style={{
+                          fontSize: '0.7rem',
+                          color: 'var(--tx-3)',
+                        }}>
+                          {skill.effects}
+                        </div>
+                      </div>
+                      <select
+                        value={currentLevel}
+                        onChange={(e) => setSkill(skill.id as keyof PassiveSkills, { ...skills[skill.id as keyof PassiveSkills], level: Number(e.target.value) as SkillLevel })}
+                        style={{
+                          width: '60px',
+                          background: 'var(--bg-base)',
+                          border: '1px solid var(--br-2)',
+                          borderRadius: 'var(--r-sm)',
+                          color: 'var(--tx-1)',
+                          fontSize: '0.8rem',
+                          padding: '0.25rem',
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {skillLevels.map(level => (
+                          <option key={level} value={level}>{level}</option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="p-3">
