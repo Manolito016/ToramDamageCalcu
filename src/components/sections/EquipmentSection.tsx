@@ -7,6 +7,7 @@ import { refinementLevels } from '../../data/refinementTable';
 import { fullStatOptions } from '../../data/statLists';
 import { mainWeaponElementOptions } from '../../data/elements';
 import { getCrystaForEquipment, type CrystaItem } from '../../data/crystaDatabase';
+import { getAllAdditionalGear, getAllSpecialGear } from '../../data/gearDatabase';
 import type { StatOption, EquipmentCrystal } from '../../types';
 
 const refinementOptions = refinementLevels.map(r => ({ value: r, label: r }));
@@ -152,19 +153,36 @@ function StatRows({
 function CrystalPair({
   crystal1, crystal2,
   onRowChange1, onRowChange2,
+  onCrystaIdChange1, onCrystaIdChange2,
   crystaList,
 }: {
   crystal1: EquipmentCrystal; crystal2: EquipmentCrystal;
   onRowChange1: (i: number, s: string, v: number) => void;
   onRowChange2: (i: number, s: string, v: number) => void;
+  onCrystaIdChange1?: (crystaId: number | undefined) => void;
+  onCrystaIdChange2?: (crystaId: number | undefined) => void;
   crystaList?: CrystaItem[];
 }) {
   return (
     <div style={sectionDivider}>
       <SectionLabel>Crystals</SectionLabel>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-        <CrystalSlot label="Crystal 1" crystal={crystal1} options={fullStatOptions} onRowChange={onRowChange1} crystaList={crystaList} />
-        <CrystalSlot label="Crystal 2" crystal={crystal2} options={fullStatOptions} onRowChange={onRowChange2} crystaList={crystaList} />
+        <CrystalSlot 
+          label="Crystal 1" 
+          crystal={crystal1} 
+          options={fullStatOptions} 
+          onRowChange={onRowChange1} 
+          onCrystaIdChange={onCrystaIdChange1}
+          crystaList={crystaList} 
+        />
+        <CrystalSlot 
+          label="Crystal 2" 
+          crystal={crystal2} 
+          options={fullStatOptions} 
+          onRowChange={onRowChange2} 
+          onCrystaIdChange={onCrystaIdChange2}
+          crystaList={crystaList} 
+        />
       </div>
     </div>
   );
@@ -200,14 +218,66 @@ function GroupHeading({ children }: { children: React.ReactNode }) {
 export function EquipmentSection() {
   const {
     state,
-    setMainWeapon, setMainWeaponCrysta, setMainWeaponStat,
+    setMainWeapon, setMainWeaponCrysta, setMainWeaponCrystaId, setMainWeaponStat,
     setSubWeapon, setSubWeaponStat,
-    setArmor, setArmorCrysta, setArmorStat,
-    setAdditionalGear, setAdditionalStat, setAdditionalCrysta,
-    setSpecialGear, setSpecialStat, setSpecialCrysta,
+    setArmor, setArmorCrysta, setArmorCrystaId, setArmorStat,
+    setAdditionalGear, setAdditionalStat, setAdditionalCrysta, setAdditionalCrystaId,
+    setSpecialGear, setSpecialStat, setSpecialCrysta, setSpecialCrystaId,
   } = useCalculator();
 
   const { mainWeapon, subWeapon, armor, additionalGear, specialGear } = state;
+
+  // Load gear from local database - instant loading, no API needed
+  const additionalGearList = getAllAdditionalGear();
+  const specialGearList = getAllSpecialGear();
+
+  // Auto-fill additional gear stats
+  const handleAdditionalGearSelect = (gearId: string) => {
+    if (!gearId) return;
+    
+    const gear = additionalGearList.find(g => g.id === parseInt(gearId));
+    if (!gear) return;
+
+    // Set DEF
+    if (gear.def !== undefined) {
+      setAdditionalGear('def', gear.def);
+    }
+
+    // Auto-fill stats from database
+    if (gear.stats && gear.stats.length > 0) {
+      gear.stats.forEach((stat: { stat: string; value: number }, index: number) => {
+        if (index < 8) {
+          const statName = stat.stat || '';
+          const value = stat.value || 0;
+          setAdditionalStat(index, statName, value);
+        }
+      });
+    }
+  };
+
+  // Auto-fill special gear stats
+  const handleSpecialGearSelect = (gearId: string) => {
+    if (!gearId) return;
+    
+    const gear = specialGearList.find(g => g.id === parseInt(gearId));
+    if (!gear) return;
+
+    // Set DEF
+    if (gear.def !== undefined) {
+      setSpecialGear('def', gear.def);
+    }
+
+    // Auto-fill stats from database
+    if (gear.stats && gear.stats.length > 0) {
+      gear.stats.forEach((stat: { stat: string; value: number }, index: number) => {
+        if (index < 8) {
+          const statName = stat.stat || '';
+          const value = stat.value || 0;
+          setSpecialStat(index, statName, value);
+        }
+      });
+    }
+  };
 
   // Use local database - instant loading, no API needed
   const weaponCrystaList = getCrystaForEquipment('weapon');
@@ -305,6 +375,8 @@ export function EquipmentSection() {
                 crystal2={mainWeapon.crysta2}
                 onRowChange1={(i, s, v) => setMainWeaponCrysta(1, i, s, v)}
                 onRowChange2={(i, s, v) => setMainWeaponCrysta(2, i, s, v)}
+                onCrystaIdChange1={(id) => setMainWeaponCrystaId(1, id)}
+                onCrystaIdChange2={(id) => setMainWeaponCrystaId(2, id)}
                 crystaList={weaponCrystaList}
               />
             </div>
@@ -416,6 +488,8 @@ export function EquipmentSection() {
                 crystal2={armor.crysta2}
                 onRowChange1={(i, s, v) => setArmorCrysta(1, i, s, v)}
                 onRowChange2={(i, s, v) => setArmorCrysta(2, i, s, v)}
+                onCrystaIdChange1={(id) => setArmorCrystaId(1, id)}
+                onCrystaIdChange2={(id) => setArmorCrystaId(2, id)}
                 crystaList={armorCrystaList}
               />
             </div>
@@ -423,6 +497,36 @@ export function EquipmentSection() {
             {/* Additional Gear */}
             <div style={panel}>
               <PanelTitle>Additional Gear</PanelTitle>
+              
+              {/* Item Selector Dropdown */}
+              <div style={{ marginBottom: '0.75rem' }}>
+                <FieldLabel>Select Item (Auto-fill)</FieldLabel>
+                <select
+                  onChange={(e) => handleAdditionalGearSelect(e.target.value)}
+                  defaultValue=""
+                  style={{
+                    width: '100%',
+                    background: 'var(--bg-float)',
+                    border: '1px solid var(--br-2)',
+                    borderRadius: 'var(--r-sm)',
+                    color: 'var(--tx-1)',
+                    fontSize: '0.8125rem',
+                    padding: '0.375rem 0.625rem',
+                    outline: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <option value="" disabled>
+                    Choose an item...
+                  </option>
+                  {additionalGearList.map((gear: any) => (
+                    <option key={gear.id} value={gear.id}>
+                      {gear.name} ({gear.category})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                 <NumInput label="DEF" value={additionalGear.def} onChange={v => setAdditionalGear('def', v)} />
                 <SelectInput
@@ -453,6 +557,8 @@ export function EquipmentSection() {
                 crystal2={additionalGear.crysta2}
                 onRowChange1={(i, s, v) => setAdditionalCrysta(1, i, s, v)}
                 onRowChange2={(i, s, v) => setAdditionalCrysta(2, i, s, v)}
+                onCrystaIdChange1={(id) => setAdditionalCrystaId(1, id)}
+                onCrystaIdChange2={(id) => setAdditionalCrystaId(2, id)}
                 crystaList={additionalCrystaList}
               />
             </div>
@@ -460,6 +566,36 @@ export function EquipmentSection() {
             {/* Special Gear */}
             <div style={panel}>
               <PanelTitle>Special Gear</PanelTitle>
+              
+              {/* Item Selector Dropdown */}
+              <div style={{ marginBottom: '0.75rem' }}>
+                <FieldLabel>Select Item (Auto-fill)</FieldLabel>
+                <select
+                  onChange={(e) => handleSpecialGearSelect(e.target.value)}
+                  defaultValue=""
+                  style={{
+                    width: '100%',
+                    background: 'var(--bg-float)',
+                    border: '1px solid var(--br-2)',
+                    borderRadius: 'var(--r-sm)',
+                    color: 'var(--tx-1)',
+                    fontSize: '0.8125rem',
+                    padding: '0.375rem 0.625rem',
+                    outline: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <option value="" disabled>
+                    Choose an item...
+                  </option>
+                  {specialGearList.map((gear: any) => (
+                    <option key={gear.id} value={gear.id}>
+                      {gear.name} ({gear.category})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div style={{ maxWidth: '160px' }}>
                 <NumInput label="DEF" value={specialGear.def} onChange={v => setSpecialGear('def', v)} />
               </div>
@@ -484,6 +620,8 @@ export function EquipmentSection() {
                 crystal2={specialGear.crysta2}
                 onRowChange1={(i, s, v) => setSpecialCrysta(1, i, s, v)}
                 onRowChange2={(i, s, v) => setSpecialCrysta(2, i, s, v)}
+                onCrystaIdChange1={(id) => setSpecialCrystaId(1, id)}
+                onCrystaIdChange2={(id) => setSpecialCrystaId(2, id)}
                 crystaList={specialCrystaList}
               />
             </div>

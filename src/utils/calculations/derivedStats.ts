@@ -41,6 +41,7 @@ import {
 import { defaultWeaponStability } from '../../data/weaponTypes';
 import { elementAdvantageMatrix } from '../../data/elements';
 import type { Element } from '../../data/elements';
+import { getCrystaById, type EquipmentContext } from '../../data/crystaDatabase';
 
 // Aggregate all stat modifiers from equipment, avatar, food, skills, etc.
 export interface StatSource {
@@ -68,40 +69,116 @@ export function aggregateAllModifiersWithSources(state: CalculatorState): Record
     }
   };
   
-  // Extract from main weapon crysta
-  const mainWeaponCrysta = extractCrystaStats(state.mainWeapon.crysta1, state.mainWeapon.crysta2);
+  // Build equipment context for conditional stat application
+  const mainWeaponContext: EquipmentContext = {
+    equipmentType: 'main_weapon',
+    mainWeaponType: state.mainWeapon.type,
+    subWeaponType: state.subWeapon.type,
+    armorType: state.armor.type,
+  };
+  
+  const subWeaponContext: EquipmentContext = {
+    equipmentType: 'sub_weapon',
+    mainWeaponType: state.mainWeapon.type,
+    subWeaponType: state.subWeapon.type,
+    armorType: state.armor.type,
+  };
+  
+  const armorContext: EquipmentContext = {
+    equipmentType: 'armor',
+    mainWeaponType: state.mainWeapon.type,
+    subWeaponType: state.subWeapon.type,
+    armorType: state.armor.type,
+  };
+  
+  const additionalContext: EquipmentContext = {
+    equipmentType: 'additional',
+    mainWeaponType: state.mainWeapon.type,
+    subWeaponType: state.subWeapon.type,
+    armorType: state.armor.type,
+  };
+  
+  const specialContext: EquipmentContext = {
+    equipmentType: 'special',
+    mainWeaponType: state.mainWeapon.type,
+    subWeaponType: state.subWeapon.type,
+    armorType: state.armor.type,
+  };
+  
+  // Extract from main weapon crysta (with conditional filtering)
+  const mainWeaponCrysta1Data = state.mainWeapon.crysta1.crystaId ? getCrystaById(state.mainWeapon.crysta1.crystaId) : null;
+  const mainWeaponCrysta2Data = state.mainWeapon.crysta2.crystaId ? getCrystaById(state.mainWeapon.crysta2.crystaId) : null;
+  const mainWeaponCrysta = extractCrystaStats(
+    state.mainWeapon.crysta1, 
+    state.mainWeapon.crysta2,
+    mainWeaponContext,
+    mainWeaponCrysta1Data,
+    mainWeaponCrysta2Data
+  );
   Object.entries(mainWeaponCrysta).forEach(([stat, value]) => addModifier(stat, value, 'Main Weapon Crystal'));  
   
   // Extract from main weapon stats
   const mainWeaponStats = extractEquipmentStats(state.mainWeapon.stats);
   Object.entries(mainWeaponStats).forEach(([stat, value]) => addModifier(stat, value, 'Main Weapon Bonus'));  
   
-  // Extract from sub weapon crysta
-  const subWeaponCrysta = extractCrystaStats(state.subWeapon.crysta1, state.subWeapon.crysta2);
+  // Extract from sub weapon crysta (with conditional filtering)
+  const subWeaponCrysta1Data = state.subWeapon.crysta1.crystaId ? getCrystaById(state.subWeapon.crysta1.crystaId) : null;
+  const subWeaponCrysta2Data = state.subWeapon.crysta2.crystaId ? getCrystaById(state.subWeapon.crysta2.crystaId) : null;
+  const subWeaponCrysta = extractCrystaStats(
+    state.subWeapon.crysta1, 
+    state.subWeapon.crysta2,
+    subWeaponContext,
+    subWeaponCrysta1Data,
+    subWeaponCrysta2Data
+  );
   Object.entries(subWeaponCrysta).forEach(([stat, value]) => addModifier(stat, value, 'Sub Weapon Crystal'));  
   
   // Extract from sub weapon stats
   const subWeaponStats = extractEquipmentStats(state.subWeapon.stats);
   Object.entries(subWeaponStats).forEach(([stat, value]) => addModifier(stat, value, 'Sub Weapon Bonus'));  
   
-  // Extract from armor crysta
-  const armorCrysta = extractCrystaStats(state.armor.crysta1, state.armor.crysta2);
+  // Extract from armor crysta (with conditional filtering)
+  const armorCrysta1Data = state.armor.crysta1.crystaId ? getCrystaById(state.armor.crysta1.crystaId) : null;
+  const armorCrysta2Data = state.armor.crysta2.crystaId ? getCrystaById(state.armor.crysta2.crystaId) : null;
+  const armorCrysta = extractCrystaStats(
+    state.armor.crysta1, 
+    state.armor.crysta2,
+    armorContext,
+    armorCrysta1Data,
+    armorCrysta2Data
+  );
   Object.entries(armorCrysta).forEach(([stat, value]) => addModifier(stat, value, 'Armor Crystal'));  
   
   // Extract from armor stats
   const armorStats = extractEquipmentStats(state.armor.stats);
   Object.entries(armorStats).forEach(([stat, value]) => addModifier(stat, value, 'Armor Bonus'));  
   
-  // Extract from additional gear crysta
-  const additionalCrysta = extractCrystaStats(state.additionalGear.crysta1, state.additionalGear.crysta2);
+  // Extract from additional gear crysta (with conditional filtering)
+  const additionalCrysta1Data = state.additionalGear.crysta1.crystaId ? getCrystaById(state.additionalGear.crysta1.crystaId) : null;
+  const additionalCrysta2Data = state.additionalGear.crysta2.crystaId ? getCrystaById(state.additionalGear.crysta2.crystaId) : null;
+  const additionalCrysta = extractCrystaStats(
+    state.additionalGear.crysta1, 
+    state.additionalGear.crysta2,
+    additionalContext,
+    additionalCrysta1Data,
+    additionalCrysta2Data
+  );
   Object.entries(additionalCrysta).forEach(([stat, value]) => addModifier(stat, value, 'Additional Gear Crystal'));  
   
   // Extract from additional gear stats
   const additionalGearStats = extractEquipmentStats(state.additionalGear.stats);
   Object.entries(additionalGearStats).forEach(([stat, value]) => addModifier(stat, value, 'Additional Gear Bonus'));  
   
-  // Extract from special gear crysta
-  const specialCrysta = extractCrystaStats(state.specialGear.crysta1, state.specialGear.crysta2);
+  // Extract from special gear crysta (with conditional filtering)
+  const specialCrysta1Data = state.specialGear.crysta1.crystaId ? getCrystaById(state.specialGear.crysta1.crystaId) : null;
+  const specialCrysta2Data = state.specialGear.crysta2.crystaId ? getCrystaById(state.specialGear.crysta2.crystaId) : null;
+  const specialCrysta = extractCrystaStats(
+    state.specialGear.crysta1, 
+    state.specialGear.crysta2,
+    specialContext,
+    specialCrysta1Data,
+    specialCrysta2Data
+  );
   Object.entries(specialCrysta).forEach(([stat, value]) => addModifier(stat, value, 'Special Gear Crystal'));  
   
   // Extract from special gear stats

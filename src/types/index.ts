@@ -67,6 +67,7 @@ export interface CrystalStatRow {
 }
 
 export interface EquipmentCrystal {
+  crystaId?: number; // ID of the selected crysta from database
   rows: [CrystalStatRow, CrystalStatRow, CrystalStatRow, CrystalStatRow, CrystalStatRow, CrystalStatRow, CrystalStatRow, CrystalStatRow];
 }
 

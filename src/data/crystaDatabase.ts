@@ -11,13 +11,35 @@ export interface CrystaItem {
     effect_id: number;
     effect_name: string;
     amount: number;
-    applies_to: number;
+    applies_to: number; // Bitmask: 0=always, 1=main weapon only, 2=sub weapon only, 4=armor only, 8=additional only, 16=special only
   }>;
   meta: {
     badge: string;
     note: string;
   };
 }
+
+// Equipment type bitmask constants for applies_to field
+export const EQUIPMENT_BITMASKS = {
+  ALWAYS: 0,           // Applies to all equipment
+  MAIN_WEAPON: 1,      // Only applies when in main weapon
+  SUB_WEAPON: 2,       // Only applies when in sub weapon
+  ARMOR: 4,            // Only applies when in armor
+  ADDITIONAL: 8,       // Only applies when in additional gear
+  SPECIAL: 16,         // Only applies when in special gear
+  HEAVY_ARMOR: 32,     // Only applies when wearing heavy armor
+  LIGHT_ARMOR: 64,     // Only applies when wearing light armor
+  BOW_BOWGUN: 128,     // Only applies when using bow/bowgun
+  STAFF_MAGIC: 256,    // Only applies when using staff/magic device
+  KNuckle: 512,        // Only applies when using knuckle
+  KATANA: 1024,        // Only applies when using katana
+  HALBERD: 2048,       // Only applies when using halberd
+  SWORD: 4096,         // Only applies when using sword (one/two-hand/dual)
+  BARE_HAND: 8192,     // Only applies when using bare hand
+  SHIELD_SUB: 16384,   // Only applies when sub weapon is shield
+  DAGGER_SUB: 32768,   // Only applies when sub weapon is dagger
+  ARROW_SUB: 65536,    // Only applies when sub weapon is arrow
+} as const;
 
 // Normal Crysta (Type 20) - 132 items
 export const normalCrysta: CrystaItem[] = [
@@ -8648,4 +8670,96 @@ export function getCrystaTypes(): Array<{ id: number; label: string; count: numb
     { id: 23, label: "Additional Crysta", count: additionalCrysta.length },
     { id: 24, label: "Special Crysta", count: specialCrysta.length }
   ];
+}
+
+// Equipment context for conditional stat application
+export interface EquipmentContext {
+  equipmentType: 'main_weapon' | 'sub_weapon' | 'armor' | 'additional' | 'special';
+  mainWeaponType?: string;
+  subWeaponType?: string;
+  armorType?: string;
+}
+
+// Check if a crysta stat should apply based on equipment context
+export function shouldApplyStat(
+  appliesTo: number,
+  context: EquipmentContext
+): boolean {
+  // If applies_to is 0 or undefined, stat always applies
+  if (!appliesTo || appliesTo === 0) return true;
+
+  const { equipmentType, mainWeaponType, subWeaponType, armorType } = context;
+
+  // Check equipment slot conditions
+  switch (appliesTo) {
+    case EQUIPMENT_BITMASKS.MAIN_WEAPON:
+      return equipmentType === 'main_weapon';
+    
+    case EQUIPMENT_BITMASKS.SUB_WEAPON:
+      return equipmentType === 'sub_weapon';
+    
+    case EQUIPMENT_BITMASKS.ARMOR:
+      return equipmentType === 'armor';
+    
+    case EQUIPMENT_BITMASKS.ADDITIONAL:
+      return equipmentType === 'additional';
+    
+    case EQUIPMENT_BITMASKS.SPECIAL:
+      return equipmentType === 'special';
+    
+    // Check armor type conditions
+    case EQUIPMENT_BITMASKS.HEAVY_ARMOR:
+      return armorType === 'Heavy Armor';
+    
+    case EQUIPMENT_BITMASKS.LIGHT_ARMOR:
+      return armorType === 'Light Armor';
+    
+    // Check weapon type conditions
+    case EQUIPMENT_BITMASKS.BOW_BOWGUN:
+      return mainWeaponType === 'Bow' || mainWeaponType === 'Bowgun';
+    
+    case EQUIPMENT_BITMASKS.STAFF_MAGIC:
+      return mainWeaponType === 'Staff' || mainWeaponType === 'Magic Device';
+    
+    case EQUIPMENT_BITMASKS.KNuckle:
+      return mainWeaponType === 'Knuckle';
+    
+    case EQUIPMENT_BITMASKS.KATANA:
+      return mainWeaponType === 'Katana';
+    
+    case EQUIPMENT_BITMASKS.HALBERD:
+      return mainWeaponType === 'Halberd';
+    
+    case EQUIPMENT_BITMASKS.SWORD:
+      return mainWeaponType === 'One-Handed Sword' || 
+             mainWeaponType === 'Two-Handed Sword' || 
+             mainWeaponType === 'Dual Wield';
+    
+    case EQUIPMENT_BITMASKS.BARE_HAND:
+      return mainWeaponType === 'Bare Hand';
+    
+    // Check sub-weapon type conditions
+    case EQUIPMENT_BITMASKS.SHIELD_SUB:
+      return subWeaponType === 'Shield';
+    
+    case EQUIPMENT_BITMASKS.DAGGER_SUB:
+      return subWeaponType === 'Dagger';
+    
+    case EQUIPMENT_BITMASKS.ARROW_SUB:
+      return subWeaponType === 'Arrow';
+    
+    default:
+      // If bitmask doesn't match any known condition, assume it always applies
+      return true;
+  }
+}
+
+// Filter crysta stats based on equipment context
+export function filterCrystaStatsByContext(
+  crysta: CrystaItem | null,
+  context: EquipmentContext
+): Array<{ effect_id: number; effect_name: string; amount: number; applies_to: number }> {
+  if (!crysta || !crysta.stats) return [];
+
+  return crysta.stats.filter(stat => shouldApplyStat(stat.applies_to, context));
 }

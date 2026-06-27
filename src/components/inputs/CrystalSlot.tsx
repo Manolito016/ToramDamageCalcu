@@ -8,15 +8,21 @@ interface CrystalSlotProps {
   crystal: EquipmentCrystal;
   options: { value: string; label: string }[];
   onRowChange: (rowIndex: number, stat: string, value: number) => void;
+  onCrystaIdChange?: (crystaId: number | undefined) => void;
   crystaList?: CrystaItem[];
 }
 
-export function CrystalSlot({ label, crystal, options, onRowChange, crystaList }: CrystalSlotProps) {
+export function CrystalSlot({ label, crystal, options, onRowChange, onCrystaIdChange, crystaList }: CrystalSlotProps) {
   const [selectedCrysta, setSelectedCrysta] = useState<string>('');
 
   // Handle crysta selection from dropdown
   const handleCrystaSelect = (crystaId: string) => {
     setSelectedCrysta(crystaId);
+    
+    // Notify parent of crystaId change
+    if (onCrystaIdChange) {
+      onCrystaIdChange(crystaId ? parseInt(crystaId) : undefined);
+    }
     
     if (!crystaId || !crystaList) return;
     

@@ -1,6 +1,7 @@
 import type { ArmorType, RefinementLevel, WeaponEquipment, ArmorEquipment, EquipmentCrystal, EquipmentBonusRow } from '../../types';
 import { armorTypeModifiers } from '../../data/armorTypes';
 import { refinementBonuses } from '../../data/refinementTable';
+import { shouldApplyStat, type EquipmentContext, type CrystaItem } from '../../data/crystaDatabase';
 
 
 // Calculate weapon ATK with refinement
@@ -94,25 +95,37 @@ export function aggregateEquipmentStats(
 }
 
 // Extract all stat modifiers from crysta slots (8 rows per crystal)
+// Now supports conditional stats based on equipment context
 export function extractCrystaStats(
   crysta1: EquipmentCrystal,
-  crysta2: EquipmentCrystal
+  crysta2: EquipmentCrystal,
+  context?: EquipmentContext,
+  crysta1Data?: CrystaItem | null,
+  crysta2Data?: CrystaItem | null
 ): Record<string, number> {
   const stats: Record<string, number> = {};
 
-  // Process all 8 rows from crystal 1
-  crysta1?.rows?.forEach(row => {
-    if (row?.stat && row.value !== 0) {
-      stats[row.stat] = (stats[row.stat] || 0) + row.value;
-    }
-  });
+  // Helper function to process a single crystal's rows
+  const processCrystalRows = (
+    crystal: EquipmentCrystal,
+    crystaData?: CrystaItem | null
+  ) => {
+    crystal?.rows?.forEach((row, index) => {
+      if (!row?.stat || row.value === 0) return;
 
-  // Process all 8 rows from crystal 2
-  crysta2?.rows?.forEach(row => {
-    if (row?.stat && row.value !== 0) {
+      // If we have context and crysta data, check conditional application
+      if (context && crystaData && crystaData.stats[index]) {
+        const shouldApply = shouldApplyStat(crystaData.stats[index].applies_to, context);
+        if (!shouldApply) return; // Skip this stat
+      }
+
+      // Apply the stat
       stats[row.stat] = (stats[row.stat] || 0) + row.value;
-    }
-  });
+    });
+  };
+
+  processCrystalRows(crysta1, crysta1Data);
+  processCrystalRows(crysta2, crysta2Data);
 
   return stats;
 }

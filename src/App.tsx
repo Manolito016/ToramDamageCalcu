@@ -23,11 +23,13 @@ function AppContent() {
   useKeyboardShortcuts();
 
   return (
-    <Routes>
-      <Route path="/" element={<MainLayout />} />
-      <Route path="/fill-stat" element={<MainLayout><FillStatSimulator /></MainLayout>} />
-      <Route path="/traits" element={<TraitReferencePage />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<MainLayout />} />
+        <Route path="/fill-stat" element={<MainLayout><FillStatSimulator /></MainLayout>} />
+        <Route path="/traits" element={<TraitReferencePage />} />
+      </Routes>
+    </>
   )
 }
 

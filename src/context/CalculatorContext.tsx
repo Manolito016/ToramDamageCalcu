@@ -208,19 +208,19 @@ type Action =
   
   | { type: 'SET_MAIN_WEAPON'; field: string; value: unknown }
   | { type: 'SET_MAIN_WEAPON_STAT'; index: number; stat: string; value: number }
-  | { type: 'SET_MAIN_WEAPON_CRYSTA'; slot: 1 | 2; rowIndex: number; stat: string; value: number }
+  | { type: 'SET_MAIN_WEAPON_CRYSTA'; slot: 1 | 2; rowIndex?: number; stat?: string; value?: number; crystaId?: number }
   | { type: 'SET_SUB_WEAPON'; field: string; value: unknown }
   | { type: 'SET_SUB_WEAPON_STAT'; index: number; stat: string; value: number }
-  | { type: 'SET_SUB_WEAPON_CRYSTA'; slot: 1 | 2; rowIndex: number; stat: string; value: number }
+  | { type: 'SET_SUB_WEAPON_CRYSTA'; slot: 1 | 2; rowIndex?: number; stat?: string; value?: number; crystaId?: number }
   | { type: 'SET_ARMOR'; field: string; value: unknown }
   | { type: 'SET_ARMOR_STAT'; index: number; stat: string; value: number }
-  | { type: 'SET_ARMOR_CRYSTA'; slot: 1 | 2; rowIndex: number; stat: string; value: number }
+  | { type: 'SET_ARMOR_CRYSTA'; slot: 1 | 2; rowIndex?: number; stat?: string; value?: number; crystaId?: number }
   | { type: 'SET_ADDITIONAL_GEAR'; field: string; value: unknown }
   | { type: 'SET_ADDITIONAL_STAT'; index: number; stat: string; value: number }
-  | { type: 'SET_ADDITIONAL_CRYSTA'; slot: 1 | 2; rowIndex: number; stat: string; value: number }
+  | { type: 'SET_ADDITIONAL_CRYSTA'; slot: 1 | 2; rowIndex?: number; stat?: string; value?: number; crystaId?: number }
   | { type: 'SET_SPECIAL_GEAR'; field: string; value: unknown }
   | { type: 'SET_SPECIAL_STAT'; index: number; stat: string; value: number }
-  | { type: 'SET_SPECIAL_CRYSTA'; slot: 1 | 2; rowIndex: number; stat: string; value: number }
+  | { type: 'SET_SPECIAL_CRYSTA'; slot: 1 | 2; rowIndex?: number; stat?: string; value?: number; crystaId?: number }
   | { type: 'SET_AVATAR'; slot: 'accessory' | 'top' | 'bottom'; index: number; stat: string; value: number }
   | { type: 'SET_FOOD_POTION'; buffType: 'food' | 'potion1' | 'potion2'; index: number; stat: string; value: number }
   | { type: 'SET_SKILL'; skill: keyof PassiveSkills; value: SkillInfo }
@@ -239,7 +239,7 @@ function calculatorReducer(state: CalculatorState, action: Action): CalculatorSt
       return { ...state, character: { ...state.character, level: clampedLevel } };
     
     case 'SET_BASE_STAT':
-      const clampedValue = Math.max(1, Math.min(999, action.value));
+      const clampedValue = Math.max(1, Math.min(510, action.value));
       return {
         ...state,
         character: {
@@ -292,13 +292,22 @@ function calculatorReducer(state: CalculatorState, action: Action): CalculatorSt
 
     case 'SET_MAIN_WEAPON_CRYSTA': {
       const crystaKey = `crysta${action.slot}` as 'crysta1' | 'crysta2';
-      const newRows = [...state.mainWeapon[crystaKey].rows] as typeof state.mainWeapon['crysta1']['rows'];
-      newRows[action.rowIndex] = { stat: action.stat, value: action.value };
+      const currentCrysta = state.mainWeapon[crystaKey];
+      const newRows = [...currentCrysta.rows] as typeof currentCrysta['rows'];
+      
+      // Update row if rowIndex is provided
+      if (action.rowIndex !== undefined) {
+        newRows[action.rowIndex] = { stat: action.stat!, value: action.value! };
+      }
+      
       return {
         ...state,
         mainWeapon: {
           ...state.mainWeapon,
-          [crystaKey]: { rows: newRows }
+          [crystaKey]: { 
+            rows: newRows,
+            crystaId: action.crystaId !== undefined ? action.crystaId : currentCrysta.crystaId
+          }
         }
       };
     }
@@ -320,13 +329,21 @@ function calculatorReducer(state: CalculatorState, action: Action): CalculatorSt
 
     case 'SET_SUB_WEAPON_CRYSTA': {
       const crystaKey = `crysta${action.slot}` as 'crysta1' | 'crysta2';
-      const newRows = [...state.subWeapon[crystaKey].rows] as typeof state.subWeapon['crysta1']['rows'];
-      newRows[action.rowIndex] = { stat: action.stat, value: action.value };
+      const currentCrysta = state.subWeapon[crystaKey];
+      const newRows = [...currentCrysta.rows] as typeof currentCrysta['rows'];
+      
+      if (action.rowIndex !== undefined) {
+        newRows[action.rowIndex] = { stat: action.stat!, value: action.value! };
+      }
+      
       return {
         ...state,
         subWeapon: {
           ...state.subWeapon,
-          [crystaKey]: { rows: newRows }
+          [crystaKey]: { 
+            rows: newRows,
+            crystaId: action.crystaId !== undefined ? action.crystaId : currentCrysta.crystaId
+          }
         }
       };
     }
@@ -348,13 +365,21 @@ function calculatorReducer(state: CalculatorState, action: Action): CalculatorSt
 
     case 'SET_ARMOR_CRYSTA': {
       const crystaKey = `crysta${action.slot}` as 'crysta1' | 'crysta2';
-      const newRows = [...state.armor[crystaKey].rows] as typeof state.armor['crysta1']['rows'];
-      newRows[action.rowIndex] = { stat: action.stat, value: action.value };
+      const currentCrysta = state.armor[crystaKey];
+      const newRows = [...currentCrysta.rows] as typeof currentCrysta['rows'];
+      
+      if (action.rowIndex !== undefined) {
+        newRows[action.rowIndex] = { stat: action.stat!, value: action.value! };
+      }
+      
       return {
         ...state,
         armor: {
           ...state.armor,
-          [crystaKey]: { rows: newRows }
+          [crystaKey]: { 
+            rows: newRows,
+            crystaId: action.crystaId !== undefined ? action.crystaId : currentCrysta.crystaId
+          }
         }
       };
     }
@@ -376,13 +401,21 @@ function calculatorReducer(state: CalculatorState, action: Action): CalculatorSt
     
     case 'SET_ADDITIONAL_CRYSTA': {
       const crystaKey = `crysta${action.slot}` as 'crysta1' | 'crysta2';
-      const newRows = [...state.additionalGear[crystaKey].rows] as typeof state.additionalGear['crysta1']['rows'];
-      newRows[action.rowIndex] = { stat: action.stat, value: action.value };
+      const currentCrysta = state.additionalGear[crystaKey];
+      const newRows = [...currentCrysta.rows] as typeof currentCrysta['rows'];
+      
+      if (action.rowIndex !== undefined) {
+        newRows[action.rowIndex] = { stat: action.stat!, value: action.value! };
+      }
+      
       return {
         ...state,
         additionalGear: {
           ...state.additionalGear,
-          [crystaKey]: { rows: newRows }
+          [crystaKey]: { 
+            rows: newRows,
+            crystaId: action.crystaId !== undefined ? action.crystaId : currentCrysta.crystaId
+          }
         }
       };
     }
@@ -404,13 +437,21 @@ function calculatorReducer(state: CalculatorState, action: Action): CalculatorSt
     
     case 'SET_SPECIAL_CRYSTA': {
       const crystaKey = `crysta${action.slot}` as 'crysta1' | 'crysta2';
-      const newRows = [...state.specialGear[crystaKey].rows] as typeof state.specialGear['crysta1']['rows'];
-      newRows[action.rowIndex] = { stat: action.stat, value: action.value };
+      const currentCrysta = state.specialGear[crystaKey];
+      const newRows = [...currentCrysta.rows] as typeof currentCrysta['rows'];
+      
+      if (action.rowIndex !== undefined) {
+        newRows[action.rowIndex] = { stat: action.stat!, value: action.value! };
+      }
+      
       return {
         ...state,
         specialGear: {
           ...state.specialGear,
-          [crystaKey]: { rows: newRows }
+          [crystaKey]: { 
+            rows: newRows,
+            crystaId: action.crystaId !== undefined ? action.crystaId : currentCrysta.crystaId
+          }
         }
       };
     }
@@ -470,18 +511,23 @@ interface CalculatorContextType {
   setMainWeapon: (field: string, value: unknown) => void;
   setMainWeaponStat: (index: number, stat: string, value: number) => void;
   setMainWeaponCrysta: (slot: 1 | 2, rowIndex: number, stat: string, value: number) => void;
+  setMainWeaponCrystaId: (slot: 1 | 2, crystaId: number | undefined) => void;
   setSubWeapon: (field: string, value: unknown) => void;
   setSubWeaponStat: (index: number, stat: string, value: number) => void;
   setSubWeaponCrysta: (slot: 1 | 2, rowIndex: number, stat: string, value: number) => void;
+  setSubWeaponCrystaId: (slot: 1 | 2, crystaId: number | undefined) => void;
   setArmor: (field: string, value: unknown) => void;
   setArmorStat: (index: number, stat: string, value: number) => void;
   setArmorCrysta: (slot: 1 | 2, rowIndex: number, stat: string, value: number) => void;
+  setArmorCrystaId: (slot: 1 | 2, crystaId: number | undefined) => void;
   setAdditionalGear: (field: string, value: unknown) => void;
   setAdditionalStat: (index: number, stat: string, value: number) => void;
   setAdditionalCrysta: (slot: 1 | 2, rowIndex: number, stat: string, value: number) => void;
+  setAdditionalCrystaId: (slot: 1 | 2, crystaId: number | undefined) => void;
   setSpecialGear: (field: string, value: unknown) => void;
   setSpecialStat: (index: number, stat: string, value: number) => void;
   setSpecialCrysta: (slot: 1 | 2, rowIndex: number, stat: string, value: number) => void;
+  setSpecialCrystaId: (slot: 1 | 2, crystaId: number | undefined) => void;
   setAvatar: (slot: 'accessory' | 'top' | 'bottom', index: number, stat: string, value: number) => void;
   setFoodPotion: (buffType: 'food' | 'potion1' | 'potion2', index: number, stat: string, value: number) => void;
   setSkill: (skill: keyof PassiveSkills, value: SkillLevel | SkillInfo) => void;
@@ -638,6 +684,10 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
   const setMainWeaponCrysta = useCallback((slot: 1 | 2, rowIndex: number, stat: string, value: number) => {
     dispatch({ type: 'SET_MAIN_WEAPON_CRYSTA', slot, rowIndex, stat, value });
   }, []);
+
+  const setMainWeaponCrystaId = useCallback((slot: 1 | 2, crystaId: number | undefined) => {
+    dispatch({ type: 'SET_MAIN_WEAPON_CRYSTA', slot, crystaId });
+  }, []);
   
   const setSubWeapon = useCallback((field: string, value: unknown) => {
     dispatch({ type: 'SET_SUB_WEAPON', field, value });
@@ -649,6 +699,10 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
 
   const setSubWeaponCrysta = useCallback((slot: 1 | 2, rowIndex: number, stat: string, value: number) => {
     dispatch({ type: 'SET_SUB_WEAPON_CRYSTA', slot, rowIndex, stat, value });
+  }, []);
+
+  const setSubWeaponCrystaId = useCallback((slot: 1 | 2, crystaId: number | undefined) => {
+    dispatch({ type: 'SET_SUB_WEAPON_CRYSTA', slot, crystaId });
   }, []);
   
   const setArmor = useCallback((field: string, value: unknown) => {
@@ -662,6 +716,10 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
   const setArmorCrysta = useCallback((slot: 1 | 2, rowIndex: number, stat: string, value: number) => {
     dispatch({ type: 'SET_ARMOR_CRYSTA', slot, rowIndex, stat, value });
   }, []);
+
+  const setArmorCrystaId = useCallback((slot: 1 | 2, crystaId: number | undefined) => {
+    dispatch({ type: 'SET_ARMOR_CRYSTA', slot, crystaId });
+  }, []);
   
   const setAdditionalGear = useCallback((field: string, value: unknown) => {
     dispatch({ type: 'SET_ADDITIONAL_GEAR', field, value });
@@ -674,6 +732,10 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
   const setAdditionalCrysta = useCallback((slot: 1 | 2, rowIndex: number, stat: string, value: number) => {
     dispatch({ type: 'SET_ADDITIONAL_CRYSTA', slot, rowIndex, stat, value });
   }, []);
+
+  const setAdditionalCrystaId = useCallback((slot: 1 | 2, crystaId: number | undefined) => {
+    dispatch({ type: 'SET_ADDITIONAL_CRYSTA', slot, crystaId });
+  }, []);
   
   const setSpecialGear = useCallback((field: string, value: unknown) => {
     dispatch({ type: 'SET_SPECIAL_GEAR', field, value });
@@ -685,6 +747,10 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
   
   const setSpecialCrysta = useCallback((slot: 1 | 2, rowIndex: number, stat: string, value: number) => {
     dispatch({ type: 'SET_SPECIAL_CRYSTA', slot, rowIndex, stat, value });
+  }, []);
+
+  const setSpecialCrystaId = useCallback((slot: 1 | 2, crystaId: number | undefined) => {
+    dispatch({ type: 'SET_SPECIAL_CRYSTA', slot, crystaId });
   }, []);
   
   const setAvatar = useCallback((slot: 'accessory' | 'top' | 'bottom', index: number, stat: string, value: number) => {
@@ -726,18 +792,23 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
     setMainWeapon,
     setMainWeaponStat,
     setMainWeaponCrysta,
+    setMainWeaponCrystaId,
     setSubWeapon,
     setSubWeaponStat,
     setSubWeaponCrysta,
+    setSubWeaponCrystaId,
     setArmor,
     setArmorStat,
     setArmorCrysta,
+    setArmorCrystaId,
     setAdditionalGear,
     setAdditionalStat,
     setAdditionalCrysta,
+    setAdditionalCrystaId,
     setSpecialGear,
     setSpecialStat,
     setSpecialCrysta,
+    setSpecialCrystaId,
     setAvatar,
     setFoodPotion,
     setSkill,
